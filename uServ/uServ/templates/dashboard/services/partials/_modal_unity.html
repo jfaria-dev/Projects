@@ -1,0 +1,30 @@
+{% load crispy_forms_tags %}
+
+<!-- Modal -->
+<div class="modal fade" id="addUnityModal" tabindex="-1" aria-labelledby="addUnityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="addUnityModalLabel">Cadastrar Unidade de Serviço:</h1>
+          <button id='btn-close-modal' type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+        </div>
+        <form id='form_unity' action="{% url "dashboard:add_unity" %}" method="post" autocomplete="off" class="row g-3">
+          <div class="modal-body">
+            {% csrf_token %}
+            <div class="col-auto mb-2">
+              <label for="staticEmail2" class="visually-hidden">Unidade</label>
+              {{ form_unity.unit|as_crispy_field }}
+            </div>  
+            <button type="submit" class="btn btn-primary w-100 p-2">Incluir</button>
+          </div>
+        </form>        
+      </div>
+    </div>
+  </div>    
+</div>
+
+<script>
+
+
+
+</script>

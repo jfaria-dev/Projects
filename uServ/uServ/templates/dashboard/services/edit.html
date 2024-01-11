@@ -1,0 +1,52 @@
+{% extends "dashboard/services/add.html" %}
+{% load crispy_forms_tags %}
+
+{% block service-title %}
+    Alterar Serviço:
+{% endblock service-title %}
+
+{% block master-category %}
+    <select name="category" id="category" class="select form-control" hx-get="{% url "dashboard:load_services_category" %}" hx-target="#id_service_category" hx-trigger="change">
+        <option value="" selected>---------</option>
+        {% for cat in master_categories %}
+            <option value="{{cat.id}}" {% if cat.id == supplier_service.service.category.parent.id %}selected{%endif%} >{{cat.name}}</option>
+        {% endfor %}
+    </select>  
+{% endblock master-category %}
+
+{% block service-category %}
+{{form.id}}
+    <select name="service_cat" id="id_serv_cat" class="select form-control" hx-get="{% url "dashboard:load_services" %}" hx-target="#id_service">
+        <option value="" selected>---------</option>
+        {% for cat in service_categories %}
+            <option value="{{ cat.id }}"  {% if cat.id == supplier_service.service.category_id %}selected{%endif%} >{{ cat.name }}</option>
+        {% endfor %}
+    </select>  
+{% endblock service-category %}
+
+{% block action_form %}
+    action={% url "dashboard:edit_service" user.supplier_id supplier_service.id %}
+{% endblock action_form %}
+
+{% block service-list %}
+    <div id="div_id_service" class="form-group">
+        <label for="id_service" class=" requiredField">
+            Serviços:
+        </label>
+        <div>
+            <select name="service" class="select form-control" required id="id_service">
+                <option value="" selected>---------</option>  
+                {% for serv in services %}
+                    <option value="{{serv.id}}" {% if serv.id == supplier_service.service.id %}selected{%endif%} >{{serv.description}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+{% endblock service-list %}
+
+
+{% block value-id %}
+    <input type="hidden" name="id" value="{{ supplier_service.id }}" />
+{% endblock value-id %}
+
+{% block btn_desc %}Alterar Serviço{% endblock btn_desc %}

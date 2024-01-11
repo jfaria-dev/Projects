@@ -1,0 +1,126 @@
+{% extends 'supplier/layout/layout.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block positional_head %}
+  <link hrel="stylesheet" ref="{% static 'supplier_assets/css/date-time-picker-component.min.css' %}" />
+{% endblock positional_head %}
+
+
+
+{% block content %}
+
+<section>
+  <div class="container text-center" style="margin-top:5%">
+    <h3>Um plano e várias vantagens para você</h3>
+    {% if messages %}
+      {% for message in messages %}
+        {% if 'register_error' in message %}
+          <span class="alert"> {{ message }}</span>
+        {% endif %}
+      {% endfor %}  
+    {% endif %}
+    <div class="row pt-5 m-auto justify-content-center">      
+      {% for plan in plans %}
+        <div class="col-md-6 col-lg-4 pb-3">
+          <div class="card card-custom bg-white border-white border-0">
+            <div class="card-custom-img" style="background-image: url(http://res.cloudinary.com/d3/image/upload/c_scale,q_auto:good,w_1110/trianglify-v1-cs85g_cc5d2i.jpg);">
+
+            </div>
+            <div class="card-custom-avatar">
+              <img class="img-fluid" src="http://res.cloudinary.com/d3/image/upload/c_pad,g_center,h_200,q_auto:eco,w_200/bootstrap-logo_u3c8dx.jpg" alt="Avatar" />
+            </div>
+            <div class="card-body" style="overflow-y: auto">
+              <h4 class="card-title">{{ plan.name }}</h4>
+              <p class="card-text">{{ plan.description }}</p>
+            </div>
+            <div class="card-footer" style="background: inherit; border-color: inherit;">
+              <a href="#" class="btn btn-primary">Preço: R$ {{ plan.price }}</a>
+              <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalPagamento{{ plan.id }}">Assinar</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Pagamento -->
+        <div class="modal fade" id="modalPagamento{{ plan.id }}" tabindex="-1" aria-labelledby="modalPagamento{{ plan.id }}Label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 class="modal-title" id="modalPagamento{{ plan.id }}Label">Assinar Plano {{ plan.name }}</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              
+              <div class="modal-body">
+                <h5>Resumo</h5>
+                <div class="row mb-3">
+                  <div class="col text-left">
+                    Plano {{plan.name}}
+                  </div>
+                  <div class="col text-md-right">
+                    R${{plan.price}}
+                  </div>
+                </div>                  
+                <hr/>
+                <form action="" method="post" autocomplete="off">
+                  <h5>Dados do Cartão de Crédito</h5>
+                  {% csrf_token %}
+                  <input type="hidden" name="plan_id" class="textinput form-control" value={{ plan.id }} />
+                  <input type="hidden" name="plan_price" class="textinput form-control" value={{ plan.price }} />
+                  
+                  <div class="row mb-3">
+                    <div class="col">
+                      {{ form_customer_cielo.Name}}
+                    </div>
+                    <div class="col">
+                      {{ form_customer_cielo.Birthdate}}
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col">
+                      <div class="input-group"> 
+                        {{ form_credit_card.CardNumber}}
+                        <div class="input-group-append"> 
+                          <span class="input-group-text text-muted"> 
+                            <i class="fab fa-cc-visa mx-1"></i> 
+                            <i class="fab fa-cc-mastercard mx-1"></i> 
+                            <i class="fab fa-cc-amex mx-1"></i> 
+                          </span> 
+                        </div>
+                      </div>
+                    </div>                    
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col">
+                      <div class="input-group"> 
+                        <input type="number" placeholder="MM" name="MM_ExpirationDate" class="form-control" required/> 
+                        <input type="number" placeholder="YY" name="YY_ExpirationDate" class="form-control" required/> 
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group mb-4"> 
+                        {% comment %} <label data-toggle="tooltip" title="Three digit CV code on the back of your card">
+                          CVV <i class="fa fa-question-circle d-inline"></i>
+                        </label>  {% endcomment %}
+                        {{ form_credit_card.SecurityCode}} 
+                      </div>
+                    </div>
+                  </div>
+                  <hr/>
+                  
+                  <button type="submit" class="btn btn-primary w-100 p-2">Assinar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}     
+    </div>
+  </div>
+</section>
+  
+  
+  
+  
+{% endblock %}

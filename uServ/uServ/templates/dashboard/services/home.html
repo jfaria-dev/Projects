@@ -1,0 +1,70 @@
+{% extends 'dashboard/layout/layout.html' %}
+
+{% block content %}
+  <br />
+  <h5 class="">Portal do Prestador - Bem vindo, {{ supplier.name }}!</h5>
+  <hr />
+  <a href="{% url 'dashboard:add_service' supplier.id %}" class="btn btn-outline-primary btn-sm">Cadastrar Serviços</a>
+  
+  
+  <hr />
+  
+  <table class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+      <tr class="text-center">
+        <th>Ativo</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th></th>
+        <th></th>
+        <th>Categoria</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for supplier_service in services %}
+          <tr>
+            <td class="text-center">
+              {%if supplier_service.active%}
+                <p>✔</p>
+              {% else %}
+                <p>❌</p>
+              {%endif%}
+            <td>
+              <div class="d-flex align-items-center">
+                {%if supplier_service.service_image%}
+                  <img
+                      src="/dashboard{{supplier_service.service_image.url}}"
+                      alt=""
+                      style="width: 45px; height: 45px"
+                      class="rounded-circle"
+                      />
+                  {%endif%}
+                <div class="ms-3">
+                  <p class="fw-bold mb-1">{{supplier_service.service.category.name}}</p>
+                  <p class="text-muted mb-0">{{supplier_service.service.description}}</p>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <p class="fw-normal mb-1">R$ {{supplier_service.price}}</p>
+            </td>
+            <td class="text-center">
+              <p class="fw-bold mb-1">Por</p>
+            </td>
+            <td class="text-center">
+              <p class="fw-normal mb-1">{{supplier_service.unit.unit}}</p>
+            </td>
+            <td class="text-center">
+              <span class="fw-normal mb-1">{{supplier_service.service.category.category.name}}</span>
+            </td>
+            <td class="text-center">
+              <a href="{% url 'dashboard:edit_service' supplier.id supplier_service.id %}" class="btn btn-outline-primary btn-sm">Alterar</a>   
+              <a href="{% url 'dashboard:delete_service' supplier.id supplier_service.id %}" class="btn btn-outline-danger btn-sm">Excluir</a>   
+
+            </td>
+          </tr>   
+        {% endfor %}    
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'supplier/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="container bg-light shadow-md m-1 p-5 form-layout">
+    <h3>Create your Address</h3>
+    <br />
+    <form action="" method="post" autocomplete="off">
+      {% csrf_token %}
+
+      {{ form|crispy }}
+      <br />
+      <button type="submit" class="btn btn-primary w-100 p-2">Create Address</button>
+    </form>
+
+    {% comment %} <div class="text-center">
+      <p class="">Already have an account?</p>
+      <a href="{% url 'login' %}" class="">Login</a>
+    </div> {% endcomment %}
+  </div>
+{% endblock %}

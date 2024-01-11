@@ -1,0 +1,47 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+<!-- Title -->
+{% block title %}uServ - Busca de Serviços{% endblock title %}
+
+{% block head %}
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock head %}
+
+<!-- Header -->
+{% block header %}
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+            <a class="navbar-brand" href="#">
+                <img class='w-25' src={% static "img/main-logo.png" %} />
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">            
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'supplier:home' %}">Serviços</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Fornecedores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "user:add" %}">Cadastrar</a>
+                </li>
+                </ul>
+            </div>
+            </div>
+        </nav>
+    </header>
+{% endblock header %}
+
+<!-- Content (main, sector, etc) -->
+{% block content_parent %}{% endblock content_parent %}
+
+{% block footer %}
+    <div>
+        <span>uServ</span>
+    </div>
+{% endblock footer %}
