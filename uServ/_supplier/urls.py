@@ -11,13 +11,13 @@ supplier_urls = [
     path('password', views.login_user, name='password'),    
     path('plans', views.public_plans, name='public_plans'),
     path('register', views.register_user, name='register_user'),
-    path('register/<int:supplier_id>', views.register_supplier, name='register_supplier'),
-    path('register/plan/<int:supplier_id>', views.register_plan, name='plan'),    
+    # path('register/<int:supplier_id>', views.register_supplier, name='register_supplier'),
+    # path('register/plan/<int:supplier_id>', views.register_plan, name='plan'),    
 ]
 
 # HTMX URLS
 htmx_urls = [
-    path('check_card', views.check_card, name='check_card'),   
+    # path('check_card', views.check_card, name='check_card'),   
 ]
 supplier_urls += htmx_urls
 

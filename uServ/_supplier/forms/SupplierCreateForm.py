@@ -1,5 +1,4 @@
 from django.utils.translation import gettext_lazy as _
-# from django_widget_tweaks.widgets import MaskedInput
 from ..models import Supplier
 from django import forms
 

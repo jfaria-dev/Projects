@@ -1,13 +1,8 @@
-from datetime import datetime
-import json
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import  SupplierCreateForm, SupplierUpdateForm, AddressCreateForm, CieloCreditCardForm, CieloCustomerForm, LoginUserForm
+from .forms import  SupplierCreateForm, SupplierUpdateForm, AddressCreateForm, LoginUserForm
 from .models import SupplierUser, Supplier, Plan, Order
-from .api.Cielo.models.TransactionSale import Transaction, Customer, Payment, CreditCard, CardOnFile
-from .api.Cielo.models.TransactionEnums import Type, Interest
-from .api.Cielo.models.CieloEcommerce import CieloEcommerce
+
 
 from .utils.decorators import validate_url
 
@@ -105,91 +100,22 @@ def register_supplier(request, supplier_id,):
     return render(request, 'supplier/public/register.html', 
                   context=context) 
 
-# check_card
-def check_card(request):
-    print(request)
-    card_number = request.GET.get('CardNumber')    
-    print(card_number)
-    if len(str(card_number)) == 6:
-        req_cielo = CieloEcommerce()
-        reponse = req_cielo.query_card(cardnumber=card_number)
-        
-        return HttpResponse(reponse['Provider'])
-    pass
-
 
 # sign plan
 @login_required(login_url='login')
 @validate_url(view_name='plan')
 def register_plan(request, supplier_id, message=None):   
     if request.method == 'POST':
-        print(request.user.email)
-        print(supplier_id)
         supplier = Supplier.objects.get(id=supplier_id)
         data = request.POST
+        
+        # START - Create payment logic
+        # ...
+        # END - Create payment logic
+        
         # CRIANDO ORDER
-        print(data['plan_id'])
-        plan = Plan.objects.get(id=data['plan_id'])        
-        print(data['Birthdate'])
-        
-        expired_month = data['MM_ExpirationDate']
-        expired_year = data['YY_ExpirationDate']
-        
-        # # CRIANDO TRANSACTION          
-        customer = Customer(
-            Name = data['Name'],
-            Email = request.user.email,
-            Birthdate = str(data['Birthdate'])
-        )
-               
-        card_on_file = CardOnFile(
-            Usage = "First",
-            Reason = "Recurring"
-        )   
-               
-        credit_card = CreditCard(
-            CardNumber = data['CardNumber'],   
-            Holder=data['Name'],    
-            ExpirationDate = f'{expired_month}/{expired_year}',
-            SecurityCode = data['SecurityCode'],
-            SaveCard = False,
-            Brand = 'Visa',
-            CardOnFile = card_on_file,       
-        ) 
-        
-        payment = Payment(
-            Currency = 'BRL',
-            Country = 'BRA',
-            ServiceTaxAmount = 0,
-            Installments = 1,
-            Interest = Interest.Loja.value,
-            Capture = True,
-            Authenticate = False,
-            Recurrent = True,
-            SoftDescriptor = "USERVLTDA",
-            Type = Type.CartaoCredito.value,
-            Amount = "%d" % (float(data['plan_price'])*100),
-            CreditCard = credit_card
-        )
-        
-        transaction = Transaction(
-            MerchantOrderId = Order.get_next_id(),
-            Customer= customer,
-            Payment = payment            
-        )
-        
-        data_json = transaction.to_dict()
-        print(data_json) 
-        # transaction_json = json.dumps(transaction.to_dict(), indent=2)
-        # print(transaction_json)
-        request = CieloEcommerce()
-        response = request.create_sale_creditcard(transaction=data_json)
-        print(response.json())
-        # customer.save()
-        # card_on_file.save()
-        # credit_card.save()
-        # payment.save()
-        # transaction.save()
+        plan = Plan.objects.get(id=data['plan_id'])         
+       
         order = Order(plan=plan, 
                       supplier=supplier, 
                       value = data['plan_price'])
@@ -199,11 +125,7 @@ def register_plan(request, supplier_id, message=None):
         return redirect('dashboard:dashboard', supplier.id)
     else:    
         plans = Plan.objects.all() 
-        form_customer_cielo = CieloCustomerForm()
-        form_credit_card = CieloCreditCardForm()
-        return render(request, 'supplier/private/plan.html',  {'plans': plans, 
-                                                       'form_customer_cielo': form_customer_cielo,
-                                                       'form_credit_card': form_credit_card})
+        return render(request, 'supplier/private/plan.html',  {'plans': plans,})
 
 
 

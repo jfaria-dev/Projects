@@ -1,0 +1,25 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}Cadastrar Loja{% endblock title %}
+
+{% block content %}  
+
+    {% include "supplier/partials/_call-to-register.html" %}    
+
+{% endblock content %}
+
+{% block javascript %}
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+    <script>
+        var phone_mask = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+            },
+            opt = {
+            onKeyPress: function(val, e, field, options) {
+                field.mask(phone_mask.apply({}, arguments), options);
+                }
+            };            
+            $('#phone').mask(phone_mask, opt);
+    </script>
+{% endblock javascript %}
