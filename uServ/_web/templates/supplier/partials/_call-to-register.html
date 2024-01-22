@@ -1,3 +1,4 @@
+{% load static %}
 <section class="bg-white dark:bg-gray-900">
     <div class="grid max-w-screen-xl px-4 pt-10 pb-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:pt-10">
         <div class="mr-auto place-self-center lg:col-span-7">
@@ -14,50 +15,39 @@
                 </a>
             </div>
         </div>
-        <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
+        <div class="lg:mt-0 lg:col-span-5 lg:flex">
             <div class="w-full max-w-md py-20">
                 <form action="{% url "supplier:register" %}" method="POST" class="space-y-6 bg-white dark:bg-gray-800 p-8 border border-gray-200 rounded-lg shadow-sm dark:border-gray-700">
                     {% csrf_token %}
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white md:text-4xl">
-                        Cadastre sua Loja
-                    </h2>
-                    {% for error in form.errors %}
-                        <div>
-                            <span>{{error}}</span>
-                        </div>                            
+                    {% if form.errors %}
+                        {% for error in form.errors %}
+                            <div><span>{{ error }}</span></div>
+                        {% endfor %}
+                    {% endif %}
+                    {% for field in form %}
+                        <div class="rounded-md shadow-sm -space-y-px">
+                            <div>
+                                {% if field.field.widget.input_type == 'email' %}
+                                    <label for="{{ field.id_for_label }}" >{{ field.label }}</label>
+                                    <label class="relative text-gray-400 focus-within:text-gray-600 block" for="{{ field.id_for_label }}">
+                                        <img id='svg_{{ field.id_for_label }}' src="{% static 'images/mail.svg' %}" alt="mail" class="pointer-events-none w-8 h-8 absolute top-1/2 transform -translate-y-1/2 left-3"/>
+                                        <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="{{ field.field.widget.input_type }}" placeholder="{{ field.label }}" value="{% if field.value %}{{field.value}}{% endif %}" required 
+                                            class="form-input rounded-lg border border-gray-300 py-2 px-4 bg-white placeholder-gray-500 text-gray-500 appearance-none w-full block pl-14 focus:outline-none">
+                                    </label>
+                                {% else %}
+                                    <label for="{{ field.id_for_label }}" >{{ field.label }}</label>
+                                    <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="{{ field.field.widget.input_type }}" autocomplete="{{ field.autocomplete }}" value="{% if field.value %}{{field.value}}{% endif %}" required 
+                                    class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
+                                    placeholder="{{ field.label }}">
+                                {% endif %}
+                            </div>
+                        </div>
                     {% endfor %}
                     <div>
-                        <label for="service_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nome Completo</label>
-                        <input type="text" 
-                            placeholder="Bernardo Tadeu"
-                            name="owner_name" 
-                            id="owner_name" 
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block 
-                                w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
+                        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            Cadastrar
+                        </button>
                     </div>
-                    <div>
-                        <label for="service_description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                        <input type="text" 
-                            placeholder="email@email.com.br"
-                            name="email" 
-                            id="email" 
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block 
-                                w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
-                    </div>
-                    <div>
-                        <label for="service_category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Telefone (com DDD)</label>
-                        <input type="text" 
-                            placeholder="(00) 00000-0000"
-                            name="phone" 
-                            id="phone" 
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block 
-                                w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
-                    
-                        
-                    </div>
-                    <button type="submit" class="w-full text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
-                        Cadastrar agora
-                    </button>
                 </form>
             </div>
         </div>                

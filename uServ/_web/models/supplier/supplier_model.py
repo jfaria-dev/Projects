@@ -1,35 +1,34 @@
+
 from django.db import models
-from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
-class Supplier(models.Model):
         
+class Supplier(models.Model): 
+    # FUNCTIONS     
+    def get_ById(id):
+        return Supplier.objects.filter(id=id).first()
+    
+    def is_uniqueByEmail(email):
+        return Supplier.objects.filter(email=email).exists()
+    
+    def get_ByEmail(email):
+        return Supplier.objects.filter(email=email).first()
+    
+    # FIELDS        
     owner_name = models.CharField(max_length=200)
-    email = models.EmailField(max_length=200)
-    phone = models.CharField(max_length=19,
-                             validators=[
-                                        RegexValidator(
-                                            regex=r'^[(]\d{2}[)] \d{5}[-]\d{4}$',
-                                            message="Informe um telefone válido.",
-                                            code="invalid_registration",
-                                        ),]) # +55 (00) 00000-0000
-    
-    company_name = models.CharField(max_length=250, null=True, blank=True)
-    company_name_show = models.CharField(max_length=250, null=True, blank=True)
-    company_document_number = models.CharField(max_length=18, null=True, blank=True) # 00.000.000/00000-00
-    company_phone = models.CharField(max_length=19, null=True, blank=True)
-    owner_document_number = models.CharField(max_length=14, null=True, blank=True) # 000.000.000-00
-    professional_birthdate = models.DateField(null=True, blank=True)    
-    
-    def image_path(instance, filename):
-        return '/'.join(['supplier', instance.id, filename])
-    photo = models.ImageField(upload_to=image_path, null=True, blank=True)
-        
+    email = models.EmailField(max_length=200, unique=True,)                              
+    phone = models.CharField(max_length=15,) # +55 (00) 00000-0000 
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
+    class Meta:
+      app_label = '_web'
+      db_table = 'supplier'
+    
+    # VALIDATIONS
     def clean_fields(self, exclude=None):
         """
         Clean all fields and raise a ValidationError containing a dict
@@ -56,12 +55,8 @@ class Supplier(models.Model):
         if errors:
             raise ValidationError(errors)
     
-    class Meta:
-      app_label = '_web'
-      db_table = 'supplier'
-      
     
-    def get_byId(id):
-        return Supplier.objects.filter(id=id).first()
+    
+    
       
       

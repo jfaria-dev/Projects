@@ -23,7 +23,11 @@ class Screen(models.Model):
         return f'{self.name} - "{self.url}"'
     
     def content(request):
-        aux = Screen.objects.get(url=request.path)
+        print('request.path: ', request.path)
+        path = str(request.path)
+        if path.startswith('/'):
+            path = path[1:]
+        aux = Screen.objects.get(url=path)
         return {
                 'title': aux.title,
                 'paragraph': aux.paragraph

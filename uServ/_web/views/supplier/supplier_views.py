@@ -1,12 +1,17 @@
+from datetime import datetime
+from django.forms import ValidationError, inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.middleware.csrf import _add_new_csrf_cookie, get_token
+
 
 import requests
-from ...models import Supplier, SupplierUser, SupplierAddress
+from ...models import Order, Supplier, SupplierUser, SupplierAddress, SupplierDetails, api_get_supplier_information
 from ...models.common.screen_model import Screen
-from ...forms.supplier import SupplierForm, AddressForm
+from ...forms.supplier import SupplierForm, SupplierAddressForm, SupplierDetailsForm
 
 # ==================== FUNCTIONS ====================
 def _set_screen_content(request):
@@ -28,56 +33,26 @@ def _set_screen_content(request):
                 'partial_paragraph': content_screen['paragraph']
             }
 
-def verify_address_exists(company_data, supplier_id):
-    address = SupplierAddress.get_bySupplierId(supplier_id)
-    if address:
-        return AddressForm(company_data, instance=address)
-    else:
-        return AddressForm(company_data)
-
-def create_user_and_login(request, supplier, password):
-    user = SupplierUser.create_user(email=supplier.email, password=password, supplier=supplier)                
+def _create_user_and_login(request, supplier, password):
+    supplier_user = SupplierUser.get_ByEmail(supplier.email)
+    if not supplier_user:
+        user = SupplierUser.objects.create_user(email=supplier.email, password=password, supplier=supplier)                
     # LOGIN USER                 
     return auth.authenticate(request=request, username=supplier.email, password=password)
 
-# ==================== VIEWS =======================
+def _update_csrf_token(request):
+    request.session['csrf_token'] = _add_new_csrf_cookie(request)
+    
+    return request
 
-def home(request):
-    context = {
-        'content_page': _set_screen_content(request)
-    }    
-    return render(request, 'supplier/index.html', context= context)
+def _exists_email(email):
+    if Supplier.get_ByEmail(email):        
+        return True
+    return False
 
-def login(request):
-    return render(request, 'supplier/login/login.html')
-
-def register(request):
-    """Register a new supplier (owner_name, email, phone)
-
-    Args:
-        request (request.POST): (owner_name, email, phone)
-
-    Returns:
-        Redirect: Document Choice (CPF or CNPJ)
-    """
-    form = SupplierForm()
-    if request.method == 'POST':
-        supplier_data = request.POST.copy()  # Create a copy to avoid modifying the original request.POST
-        form = SupplierForm(supplier_data)               
-        supplier = Supplier.objects.filter(email=supplier_data['email']).first()  # Verify if already exists supplier with this email
-        if not supplier:
-            if form.is_valid():
-                supplier = form.save()
-            return redirect('supplier:document_choice', supplier.id)        
-        else:
-            return redirect('supplier:document_choice', supplier.id)    
-    context = {
-        'form': form,
-        'content_page': _set_screen_content(request)
-    }
-    return render(request, 'supplier/register/register.html', context=context)
-
-def get_company_from_document(request):
+# ==================== AJAX ========================
+# AJAX - GET COMPANY INFORMATION FROM DOCUMENT NUMBER
+def get_company_from_document(request=None, document_number=None):
     """Get the information about the company from the document number
 
     Args:
@@ -119,224 +94,218 @@ def get_company_from_document(request):
             "capital_social": "60000.00",
         }
     """
+    if document_number: 
+        response = api_get_supplier_information(document_number) 
+        return response
+    else:
+        response = api_get_supplier_information(request.GET.get('company_document_number')) 
+        return JsonResponse(response)
 
-    company_document_number = request.GET.get('company_document_number')
-    url = f'https://www.receitaws.com.br/v1/cnpj/{company_document_number}'  
-    response = requests.get(url)   
-    data = response.json()
-    return JsonResponse(data)
-
-def get_professional_from_document(request):
-    """Get the information about the professional from the document number and birthdate
-
-    Args:
-        request (_type_): _description_
-
-    Returns:
-        JSON: 
+# AJAX - GET PROFESSIONAL INFORMATION FROM DOCUMENT NUMBER AND BIRTHDATE
+def get_professional_from_document(request):   
+    date_format = "%d-%m-%Y"
+    birthdate = datetime.strptime(request.GET.get('birthdate'), date_format).strftime('%Y-%m-%d')
+    # response = api_get_supplier_information(request.GET.get('document_number'), birthdate)
+    
+    data_test = {
+        "code": 200,
+        "code_message": "A requisição foi processada com sucesso.",
+        "header": {
+            "api_version": "v2",
+            "api_version_full": "2.2.12-20230929113629",
+            "product": "Consultas",
+            "service": "receita-federal/cpf",
+            "parameters": {
+            "birthdate": "1111-11-11",
+            "cpf": "123.456.789-01"
+            },
+            "client_name": "Minha Empresa",
+            "token_name": "Token de Produção",
+            "billable": True,
+            "price": "0.2",
+            "requested_at": "2023-09-29T13:16:10.000-03:00",
+            "elapsed_time_in_milliseconds": 127,
+            "remote_ip": "111.111.111.111",
+            "signature": "U2FsdGVkX1+wRo/rgxRVkfOBcsPsWtK4dXaPpcbGNgRGxl4RsxQqDr0mrnEqONwDb9lrkUKh+fFPSDsnVqvy7g=="
+        },
+        "data_count": 1,
+        "data": [
             {
-                "code": 200,
-                "code_message": "A requisição foi processada com sucesso.",
-                "header": {
-                    "api_version": "v2",
-                    "api_version_full": "2.2.16-20240113081702",
-                    "product": "Consultas",
-                    "service": "receita-federal/cpf",
-                    "parameters": {
-                    "birthdate": "1985-12-14",
-                    "cpf": "07921263607",
-                    "origem": "web"
-                    },
-                    "client_name": "Jackson Faria Da Silva",
-                    "token_name": "Jackson Faria Da Silva",
-                    "billable": true,
-                    "price": "0.24",
-                    "requested_at": "2024-01-15T00:29:44.000-03:00",
-                    "elapsed_time_in_milliseconds": 6962,
-                    "remote_ip": "179.83.57.132",
-                    "signature": "U2FsdGVkX18lVKOlzeQasBG5iMP319sTcp2v8N3X8oIL2vdXQhxUjFc0XhVKzFEUiVZedUJ1LGTgD/ih7a5wHQ=="
-                },
-                "data_count": 1,
-                "data": [
-                    {
-                    "ano_obito": null,
-                    "consulta_comprovante": "709D.BD86.8D13.505A",
-                    "consulta_datahora": "15/01/2024 00:29:42",
-                    "consulta_digito_verificador": "00",
-                    "cpf": "079.212.636-07",
-                    "data_inscricao": "04/12/2003",
-                    "data_nascimento": "14/12/1985",
-                    "nome": "JACKSON FARIA DA SILVA",
-                    "nome_civil": "",
-                    "nome_social": "",
-                    "normalizado_ano_obito": 0,
-                    "normalizado_consulta_datahora": "15/01/2024 00:29:42",
-                    "normalizado_cpf": "07921263607",
-                    "normalizado_data_inscricao": "04/12/2003",
-                    "normalizado_data_nascimento": "14/12/1985",
-                    "origem": "web",
-                    "qrcode_url": "https://servicos.receita.fazenda.gov.br/Servicos/CPF/ca/ResultadoAut.asp?cp=07921263607&cc=709DBD868D13505A&de=15012024&he=002942&dv=00&em=01",
-                    "situacao_cadastral": "REGULAR",
-                    "site_receipt": "https://storage.googleapis.com/infosimples-api-tmp/api/receita-federal/cpf/20240115002943/rDjfpphdtw6hIE6oLVk7knDJUq11TB66/455ec6b0c8218ffb893aaee088d77874_0_Sis.html"
-                    }
-                ],
-                "errors": [],
-                "site_receipts": [
-                    "https://storage.googleapis.com/infosimples-api-tmp/api/receita-federal/cpf/20240115002943/rDjfpphdtw6hIE6oLVk7knDJUq11TB66/455ec6b0c8218ffb893aaee088d77874_0_Sis.html"
-                ]
+            "ano_obito": None,
+            "consulta_comprovante": "1111.1111.1111.1111",
+            "consulta_datahora": "29/09/2023 13:16:08",
+            "consulta_digito_verificador": "00",
+            "cpf": "123.456.789-01",
+            "data_inscricao": "11/11/1111",
+            "data_nascimento": "11/11/1111",
+            "nome": "Exemplo de Nome",
+            "nome_civil": "Exemplo de Nome",
+            "nome_social": "Exemplo de Nome",
+            "normalizado_ano_obito": 0,
+            "normalizado_consulta_datahora": "29/09/2023 13:16:08",
+            "normalizado_cpf": "12345678901",
+            "normalizado_data_inscricao": "11/11/1111",
+            "normalizado_data_nascimento": "11/11/1111",
+            "origem": "mobile",
+            "qrcode_url": "https://www.exemplo.com/exemplo-de-url",
+            "situacao_cadastral": "ATIVA",
+            "site_receipt": "https://www.exemplo.com/exemplo-de-url"
             }
-
-    """
-    professional_document_number = request.GET.get('company_document_number')
-    professional_birthdate = request.GET.get('professional_birthdate')
-    print('professional_birthdate: ', professional_birthdate)
-    token = 'EIj4Ujz-6aFwxzxwvQWBnidjwTrr_YNaP2DmgdBI'
-    # url = f'https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token={token}&cpf={professional_document_number}&birthdate={professional_birthdate}&origem=web'
-    url = 'https://api.infosimples.com/api/v2/consultas/receita-federal/cpf'
-    args = {
-        "cpf":       str(professional_document_number),
-        "birthdate": str(professional_birthdate),
-        "origem":    "web",
-        "token":     token,
-        "timeout":   300
+        ],
+        "errors": [],
+        "site_receipts": [
+            "https://www.exemplo.com/exemplo-de-url"
+        ]
     }
-    response = requests.post(url, args)
-    response_json = response.json()
-    response.close()
-    if response_json['code'] != 200:
-        raise JsonResponse('Dados inválidos')
     
-    return JsonResponse(response_json['data'][0])
-    
-def get_address_from_postal_code(request): 
-    """Get the address from the postal code through the BrasilAPI: 
-        "https://brasilapi.com.br/api/cep/v2/{postal_code}"  
-    Args:
-        request (string): postal code of the address
-
-    Returns:
-        Json: 
-            {
-                "cep": "01001000",
-                "state": "SP",
-                "city": "São Paulo",
-                "neighborhood": "Sé",
-                "street": "Praça da Sé - lado ímpar",
-                "service": "correios-alt",
-                "location": {
-                    "type": "Point",
-                    "coordinates": {        
-                    }
-            }
-    """
+    # if response['code'] != 200:
+    #     raise JsonResponse({ 'message': 'Dados inválidos' })
+    return JsonResponse(data_test['data'][0])
+   
+# AJAX - GET ADDRESS INFORMATION FROM POSTAL CODE
+def get_address_from_postal_code(request):     
     postal_code = request.GET.get('postal_code')
-    url = f"https://brasilapi.com.br/api/cep/v2/{postal_code}"  
-    response = requests.get(url)    
-    data = response.json()
-    print('d: ', data)    
-    return JsonResponse( data)
+    response = SupplierAddress.api_get_addres_information(postal_code) 
+    return JsonResponse( response )
 
-def document_choice(request, supplier_id):
-    """Choice what kind is the company (company or personal)
+def validate_email(request):
+    email = request.GET.get('email')
+    if _exists_email(email):
+        return JsonResponse({ 
+                            'message': 'E-mail já existe.',
+                            'exists': True})
+    return JsonResponse({ 
+                        'message': 'E-mail válido.',
+                        'exists': False})
+                         
 
-    Args:
-        request (_type_): Request
-        supplier_id (_type_): Supplier Id created by register function
+# ==================== VIEWS =======================
 
-    Returns:
-        _type_: _description_
-    """
-    choice = request.GET.get('choice')
-    
-    if choice:
-        if choice == 'CPF':
-            return redirect('supplier:service_professional', supplier_id)
-        return redirect('supplier:company', supplier_id)
-    
-    supplier = Supplier.get_byId(supplier_id)
+def home(request):
+    form = SupplierForm()
     context = {
-        'supplier': supplier,
-    }
-    return render(request, 'supplier/register/document-choice.html', context= context)
+        'content_page': _set_screen_content(request),
+        'form': form
+    }    
+    return render(request, 'supplier/index.html', context= context)
 
-def company(request, supplier_id):
-    """Create a new company, address and user to login
-
-    Args:
-        request (request): Browser request
-        supplier_id (int): Id from Supplier created by register function
-
-    Returns:
-        Redirect: Sign Plan if all data is valid
-    """
-    supplier = Supplier.get_byId(supplier_id)
-    errors = []
+def login_supplier(request):
     if request.method == 'POST':
-        company_data = request.POST.copy()
-        address_form = verify_address_exists(company_data, supplier_id)
-        if address_form.is_valid():
-            supplier_form = SupplierForm(company_data, instance=supplier)
-            if supplier_form.is_valid():
-                supplier = supplier_form.save()
-                address = address_form.save(commit=False)
-                address.supplier = supplier            
-                address.save()
-                
-                # CREATET AND LOGIN USER                 
-                user_logged = create_user_and_login(request, username=supplier.email, password=company_data['password'])
-                if user_logged is not None:
-                    # Realizamos o login automático
-                    auth.login(request, user_logged) 
-                    return redirect('supplier:sign_plan', supplier_id)
-                return redirect('supplier:login')
-            errors += supplier_form.errors
-        errors += address_form.errors            
+        errors=[]
+        email = request.POST['email']
+        password = request.POST['password']
+        user_logged = auth.authenticate(request=request, username=email, password=password)
+        if user_logged is not None:
+            auth.login(request, user_logged) 
+            
+            # logica do que falta no registro
+            supplier = Supplier.get_ByEmail(email)
+            if supplier.details is None:
+                return redirect('supplier:company_details', supplier.id)
+            elif supplier.address is None:
+                return redirect('supplier:company_address', supplier.id)
+            else: 
+                orders_valid = Order.get_BySupplierHasOrderValid(supplier.id)
+                if orders_valid is None:
+                    return redirect('supplier:sign_plan', supplier.id)
+                else:
+                    return redirect('supplier:home') # MUDAR PARA O DASHBOARD
+            
+            
+            
+            return redirect('supplier:home')
+        else:
+            if _exists_email(email):
+                messages.success(request, 'Senha inválida.')
+            else:
+                messages.success(request, 'E-mail inválido.')
+            return redirect('supplier:login')  
     
-    context = {
-        'supplier': supplier,
-        'errors': errors
-    }
-    return render(request, 'supplier/register/company.html', context=context)
+    return render(request, 'supplier/authenticate/login.html')
 
-def service_professional(request, supplier_id):
-    """Create a new personal worker, address and user to login
+def logout_supplier(request):
+    auth.logout(request)
+    return redirect("supplier:home")
+
+# FIRST REGISTER - NAME, EMAIL, PHONE
+def register(request):
+    """Register a new supplier (owner_name, email, phone)
 
     Args:
-        request (request): Browser request
-        supplier_id (int): Id from Supplier created by register function
+        request (request.POST): (owner_name, email, phone)
 
     Returns:
-        Redirect: Sign Plan if all data is valid
+        Redirect: Document Choice (CPF or CNPJ)
     """
-    supplier = Supplier.get_byId(supplier_id)
-    errors = []
+    form = SupplierForm()
     if request.method == 'POST':
-        personal_data = request.POST.copy()
-        address_form = verify_address_exists(personal_data, supplier_id)
-        if address_form.is_valid():
-            supplier_form = SupplierForm(personal_data, instance=supplier)
-            if supplier_form.is_valid():
-                supplier = supplier_form.save()
-                address = address_form.save(commit=False)
-                address.supplier = supplier            
-                address.save()
-                
-                # CREATET AND LOGIN USER                 
-                user_logged = create_user_and_login(request, username=supplier.email, password=personal_data['password'])
-                if user_logged is not None:
-                    # Realizamos o login automático
-                    auth.login(request, user_logged) 
-                    return redirect('supplier:sign_plan', supplier_id)
-                return redirect('supplier:login')
-            errors += supplier_form.errors
-        errors += address_form.errors            
-    
+        supplier_data = request.POST.copy()  # Create a copy to avoid modifying the original request.POST
+        form = SupplierForm(supplier_data)               
+        supplier = _exists_email(supplier_data['email'])  # Verify if already exists supplier with this email
+       
+        if not supplier:
+            if form.is_valid():
+                print('form: ', form)
+                supplier = form.save()
+                return redirect('supplier:company_details', supplier.id)
+        
     context = {
-        'supplier': supplier,
-        'errors': errors
+        'form': form,
+        'content_page': _set_screen_content(request)
     }
-    return render(request, 'supplier/register/service-professional.html', context=context)
+    return render(request, 'supplier/register/register.html', context=context)
 
+@ensure_csrf_cookie
+def company_details(request, supplier_id):
+    supplier = Supplier.get_ById(supplier_id)
+    supplier_details = SupplierDetails.get_ById(supplier_id)      
+    form = SupplierDetailsForm(request.POST or None, instance=supplier_details)
+    if request.method == 'POST':
+        if form.is_valid():
+            print(form)
+            form.instance.supplier = supplier
+            supplier_details = form.save()
+            user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
+            if user_logged is not None:
+                auth.login(request, user_logged) 
+                return redirect('supplier:company_address', supplier_id)
+            return redirect('supplier:login')
+    return render(request, 'supplier/register/company.html', {
+        'form': form, 
+        'supplier': supplier,
+        'password': True})    
+
+@ensure_csrf_cookie
+@login_required(login_url='login')
+def company_address(request, supplier_id):
+    supplier = Supplier.get_ById(supplier_id)   
+    address = SupplierAddress.get_BySupplierId(supplier_id) 
+    form = SupplierAddressForm(request.POST or None, instance=address)    
+    
+    if form.data.__len__() == 0 and supplier.details.document_type == 'CNPJ':
+        supplier_json = get_company_from_document(document_number=supplier.details.company_document_number)
+        address = SupplierAddress()
+        address.postal_code = supplier_json['cep']
+        address.street = supplier_json['logradouro']
+        address.number = supplier_json['numero']
+        address.complement = supplier_json['complemento']
+        address.neighborhood = supplier_json['bairro']
+        address.city = supplier_json['municipio']
+        address.state = supplier_json['uf']   
+        form.instance = address    
+    
+    if request.method == 'POST':
+        print('form', form)
+        
+        if form.is_valid():
+            form.instance.supplier = supplier
+            form.save()
+            return redirect('supplier:sign_plan', supplier_id) 
+    
+    return render(request, 'supplier/register/address.html', {
+        'form': form, 
+        'supplier': supplier,})
+    
 @login_required(login_url='login')
 def sign_plan(request, supplier_id):
     return render(request, 'supplier/register/sign-plan.html')

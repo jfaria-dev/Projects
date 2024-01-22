@@ -1,0 +1,51 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %}
+  Cadastro
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div class="pt-[80px] text-center justify-self-center justify-center items-center">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white md:text-4xl">Cadastro de Informações</h2>
+        </div>
+    </div>
+    {% if fdeails.errors %}
+        <div>
+            {% for error in fdeails.errors %}
+                <div>
+                    <span>{{ error }}</span>
+                </div>
+            {% endfor %}            
+        </div>
+    {% endif %}
+    {% if faddress.errors %}
+        <div>
+            {% for error in faddress.errors %}
+                <div>
+                    <span>{{ error }}</span>
+                </div>
+            {% endfor %}            
+        </div>
+    {% endif %}
+    {% include "supplier/partials/_form.html" %}
+    
+    
+    
+
+    <div id="loading" class="z-auto fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-white bg-opacity-50">
+        <img src="{% static 'images/Infinity-1s-200px.svg' %}" alt="">
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
+    <script src="{% static 'js/supplier.address.js' %}"></script>
+{% endblock %}

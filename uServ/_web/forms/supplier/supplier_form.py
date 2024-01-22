@@ -7,14 +7,24 @@ class SupplierForm(forms.ModelForm):
     
     class Meta:
         model = Supplier
-        fields = ['owner_name', 'email', 'phone', 'company_name', 'company_name_show', 'company_phone', 'company_document_number', 'owner_document_number']        
+        fields = ['owner_name', 'email', 'phone']        
         labels = {
             'owner_name': _('Nome Completo'),
             'email': _('E-mail'),	
-            'phone': _('Telefone para Contato'),	
-            'company_name': _('Nome da Empresa'),
-            'company_document_number': _('Cnpj'),
-            'owner_document_number': _('Documento do Representante')
-        } 
+            'phone': _('Telefone para Contato')
+        }
     
+    def clean_phone(self):
+        phone = str(self.cleaned_data.get('phone'))
+        print('phone: ', phone)
+        if len(phone) < 14:
+            raise forms.ValidationError(_('Telefone Inválido.'))
+        return phone
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            if Supplier.is_uniqueByEmail(email=email):
+                raise forms.ValidationError(_('E-mail já Existe.'))
+        return email
         

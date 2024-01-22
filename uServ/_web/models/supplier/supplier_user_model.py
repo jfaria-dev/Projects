@@ -20,6 +20,10 @@ class SupplierUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class SupplierUser(AbstractBaseUser, PermissionsMixin):
+    def get_ByEmail(email):
+        return SupplierUser.objects.filter(email=email).first()
+    
+    
     email = models.EmailField(unique=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
 
