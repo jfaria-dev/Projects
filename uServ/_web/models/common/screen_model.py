@@ -1,7 +1,6 @@
 # create a model for all screens in the system for access control
 
 from django.db import models
-from _web.models import SupplierUser
 from datetime import datetime
 
 class Screen(models.Model):
@@ -14,9 +13,7 @@ class Screen(models.Model):
     paragraph = models.CharField(max_length=400, null=True, blank=True)
     
     active = models.BooleanField(default=True)
-    created_by = models.ForeignKey(SupplierUser, related_name='screen_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_on = models.DateTimeField(default= datetime.now())
-    modified_by = models.ForeignKey(SupplierUser, related_name='screen_modified_by', on_delete=models.SET_NULL, null=True, blank=True)
     modified_on = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

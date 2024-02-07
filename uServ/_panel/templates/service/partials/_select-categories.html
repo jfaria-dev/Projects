@@ -1,0 +1,20 @@
+{% comment %} <select name="category" id="id_serv_cat" class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring" 
+  hx-get="{% url "panel:fetch_general_services" %}" hx-target="#id_service">
+    <option value="" selected>---------</option>
+    {% for item in service_categories %}
+      <option value="{{ item.id }}">{{ item.name }}</option>
+    {% endfor %}
+</select> {% endcomment %}
+
+
+<label for="category" class="block overflow-hidden bg-gray-100 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+  <span class="text-xs font-medium text-gray-700"> Categoria </span>
+
+  <select name="category" id="id_category" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" 
+      hx-get="{% url "panel:fetch_general_services" %}" hx-target="#id_service">
+      <option value="" selected>---------</option>
+      {% for cat in categories %}
+          <option value="{{cat.id}}" {% if category == cat.id %} selected {% endif %}>{{cat.name}}</option>
+      {% endfor %}
+  </select>    
+</label>          

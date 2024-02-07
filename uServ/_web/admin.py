@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models.common import menu_model, screen_model 
-from .models.user import User
-
+from .models import Plan, Attribute, User, Screen, Menu
+from _panel.models import Category, CategoryAdmin
 # Register your models here.
-admin.site.register([User.User, menu_model.Menu, screen_model.Screen])
+admin.site.register([User, Screen, Plan, Attribute])
+
+admin.site.register(Category, CategoryAdmin)
+

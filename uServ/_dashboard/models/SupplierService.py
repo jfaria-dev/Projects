@@ -1,5 +1,4 @@
 from django.db import models
-from _supplier.models import Supplier, SupplierUser
 
 class Service(models.Model):
     description = models.CharField(max_length=200)
@@ -18,14 +17,13 @@ class SupplierService(models.Model):
     print(url)
     return url
   
-  supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name='services')
+  # supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name='services')
   service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True, related_name='services')
   unit = models.ForeignKey('Unity', on_delete=models.CASCADE, null=True)
   price = models.DecimalField(max_digits=10, decimal_places=2)
   service_image = models.ImageField(upload_to=supplier_service_image_path, null=True, blank=True)
   requirements = models.TextField(null=True, blank=True)
   active = models.BooleanField(default=True)
-  user = models.ForeignKey(SupplierUser, on_delete=models.SET_NULL, null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(null=True, blank=True)
   

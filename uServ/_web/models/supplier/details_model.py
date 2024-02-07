@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.forms import ValidationError
 
 import re
@@ -20,7 +21,7 @@ class SupplierDetails(models.Model):
     Supplier Details Model
     """
     
-    # FUNCTIONS
+    # METHODS
     def get_ById(id):
         return SupplierDetails.objects.filter(supplier_id=id).first()
     
@@ -64,9 +65,14 @@ class SupplierDetails(models.Model):
         Returns:
             str: Path to save image
         """
-        return '/'.join(['supplier', instance.id, filename])
+        url = f"supplier/photo_profile/{instance.supplier.id}/{filename}"
+        return url
     
-        
+    def get_BySupplierId(supplier_id):
+        return SupplierDetails.objects.filter(supplier_id=supplier_id).first()
+
+    def get_BySuppliersName(name):
+        return SupplierDetails.objects.filter(Q(company_name__icontains=name) | Q(company_name_show__icontains=name))
     
     # FIELDS 
     supplier = models.OneToOneField('Supplier', on_delete=models.CASCADE, related_name='details')   

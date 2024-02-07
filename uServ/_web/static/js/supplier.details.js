@@ -22,12 +22,15 @@ $('#id_document_type').on('change', function(){
         $('label[for="id_company_name"]').text('Nome do Profissional');
         $('label[for="id_company_phone"]').text('Telefone do Profissional');
         $('label[for="id_birthdate"]').text('Data de Nascimento');
+        $('#id_birthdate').attr('disabled', false);
+
     }else{
         $('#id_company_document_number').mask('00.000.000/0000-00').attr('placeholder', '00.000.000/0000-00');
         $('label[for="id_company_document_number"]').text('CNPJ');
         $('label[for="id_company_name"]').text('Nome da Empresa');
         $('label[for="id_company_phone"]').text('Telefone da Empresa');
         $('label[for="id_birthdate"]').text('Data da Constituição');
+        $('#id_birthdate').attr('disabled', true);
     }
     var token = $('input[name="csrfmiddlewaretoken"]').val()
     $('input').not('#id_owner_name').val('');
@@ -122,9 +125,6 @@ $('#id_birthdate').on('change', function() {
                 $('input').not('#id_company_name').attr('disabled', false);
             }
         });
-        /*$('#id_company_name').val('NOME DE ALGUEM ' + company_document_number);
-        $('#loading').hide();
-        $('#id_company_name_show').focus();*/
     }, 1500)            
 });
 

@@ -2,6 +2,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+# from ...._panel.models.service.general_service_model import GeneralService
 
 
         
@@ -16,13 +17,15 @@ class Supplier(models.Model):
     def get_ByEmail(email):
         return Supplier.objects.filter(email=email).first()
     
-    # FIELDS        
+    # FIELDS
+    user_auth = models.OneToOneField('_web.UserAuth', on_delete=models.CASCADE, null=True, related_name='supplier')    
     owner_name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200, unique=True,)                              
     phone = models.CharField(max_length=15,) # +55 (00) 00000-0000 
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    services = models.ManyToManyField('_panel.GeneralService', related_name='suppliers', blank=True, through='_panel.Service')
     
     class Meta:
       app_label = '_web'

@@ -11,7 +11,7 @@ GEEKS_CHOICES =(
 # register a new supplier
 class SupplierDetailsForm(forms.ModelForm): 
     document_type = forms.ChoiceField(choices=GEEKS_CHOICES, widget=forms.Select, label="Tipo de Documento")
-    birthdate = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label="Data da Constituição")
+    birthdate = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d/%m/%Y'], label="Data da Constituição")
     
     class Meta:
         model = SupplierDetails

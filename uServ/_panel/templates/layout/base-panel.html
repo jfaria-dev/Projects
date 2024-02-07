@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>uServ Panel | {% block title %}{% endblock title %}</title>
+      <!-- Logo --> <!-- Favicon -->
+      <link href="{% static 'images/logo.ico' %}" rel="shortcut icon">
+      <!-- Meta -->
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <!-- Fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      <!-- Tailwind -->
+      <script src="https://cdn.tailwindcss.com"></script>
+      <!-- Style for Charts -->
+      {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" /> {% endcomment %}
+      <!-- Extra imports -->        
+      {%block head %}{% endblock %}    
+   </head>
+   <body>
+      	<div class="flex h-screen" :class="{ 'overflow-hidden': isSideMenuOpen }">
+            <!-- Desktop sidebar -->
+            {% include "layout/partials/_sidebar-desk.html" %}
+               <!-- Mobile sidebar -->
+            {% include "layout/partials/_sidebar-mb.html" %}
+         	<div class="flex flex-col flex-1 w-full">
+				<!-- NavBar Top -->
+				{% include "layout/partials/_navbar.html" %}
+            <main class="h-full overflow-y-auto">
+               {% comment %} {% include "layout/main.html" %} {% endcomment %}
+			      {% block content %}{% endblock content %}
+            </main>
+         </div>
+		<footer>
+			{% block footer %}{% endblock footer %}
+		</footer>
+		 <!-- JQuery -->
+       <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+		<!-- Extra JS imports -->
+		{% block javascript %}{% endblock javascript %}
+   </body>
+</html>

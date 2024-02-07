@@ -165,8 +165,8 @@ try:
         
     # Inserir dados 
     for p in screens:        
-        base_query = "INSERT INTO db_userv.web_screen (name, description, namespace, url, title, paragraph, active, created_by_id, created_on) "
-        values_query = f"VALUES ('{p['name']}', '{p['description']}', '{p['namespace']}', '{p['url']}', '{p['title']}', '{p['paragraph']}', True, 1, '{datetime.now()}')"
+        base_query = "INSERT INTO db_userv.web_screen (name, description, namespace, url, title, paragraph, active, created_on) "
+        values_query = f"VALUES ('{p['name']}', '{p['description']}', '{p['namespace']}', '{p['url']}', '{p['title']}', '{p['paragraph']}', True, '{datetime.now()}')"
         cursor.execute(base_query + values_query)
     
     # for p in menus:        

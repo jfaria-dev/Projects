@@ -336,19 +336,19 @@ try:
     # Inserir dados 
     for master, categorias in serv_categories.items():
         # Inserir categoria master         
-        cursor.execute(f'INSERT INTO category (name) VALUES ("{master}")')
+        cursor.execute(f'INSERT INTO category (name, active) VALUES ("{master}", True)')
         
         # Get the ID of the newly inserted master category
         cursor.execute('SELECT LAST_INSERT_ID()')
         master_id = cursor.fetchone()[0]
         for cat_filha, servicos in categorias.items():
             # Inserir categoria filha            
-            cursor.execute(f'INSERT INTO category (name, parent_id) VALUES ("{cat_filha}", {master_id})')
+            cursor.execute(f'INSERT INTO category (name, parent_id, active) VALUES ("{cat_filha}", {master_id}, True)')
             cursor.execute('SELECT LAST_INSERT_ID()')
             cat_filha_id = cursor.fetchone()[0]                  
             for s in servicos:
                 # Inserir servico                            
-                cursor.execute(f'INSERT INTO services (description, category_id) VALUES ("{s}", {cat_filha_id})')
+                cursor.execute(f'INSERT INTO general_service (description, category_id) VALUES ("{s}", {cat_filha_id})')
 
     # Commitar as alterações
     conn.commit()

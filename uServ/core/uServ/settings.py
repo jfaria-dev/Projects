@@ -28,22 +28,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # '_supplier',
-    # '_dashboard',
-    # '_user',
-    
+    '_api',
+    '_search',
     '_web',
+    '_panel',
     
+    'rest_framework',
     'widget_tweaks',
-    'crispy_forms',
-    "crispy_bootstrap4",
 ]
 
 # CUSTOM USER
-AUTH_USER_MODEL = '_web.SupplierUser'
+AUTH_USER_MODEL = '_web.UserAuth'
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
-CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

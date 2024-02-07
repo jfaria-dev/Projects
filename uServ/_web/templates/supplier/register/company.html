@@ -1,4 +1,4 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/base-web.html' %}
 {% load static %}
 
 {% block title %}
@@ -10,6 +10,9 @@
 {% endblock %}
 
 {% block content %}
+    {% include 'supplier/partials/_step-bar.html' %}
+
+
     <div>
         <div class="pt-[80px] text-center justify-self-center justify-center items-center">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white md:text-4xl">Cadastro de Informações</h2>

@@ -1,23 +1,26 @@
 from django.db import models
+from django.utils import timezone
 from datetime import datetime, timedelta
 
-class Order(models.Model):
+class SupplierOrder(models.Model):
     # FUNCTIONS
     def get_ById(id):
-        return Order.objects.filter(id=id).first()
+        return SupplierOrder.objects.filter(id=id).first()
         
     def get_BySupplierId(supplier_id):
-        return Order.objects.filter(supplier_id=supplier_id)
+        return SupplierOrder.objects.filter(supplier_id=supplier_id).first()
     
-    def get_BySupplierHasOrderValid(supplier_id):
-        orders = Order.objects.filter(supplier_id=supplier_id)
-        order = orders.filter(expires_at__lte=datetime.now()).first()
-        return order
-       
+    def get_SupplierHasOrderValid(supplier):
+        orders = SupplierOrder.objects.filter(supplier=supplier)
+        if orders.count() > 0:
+            for order in orders:
+                if order.expires_at > timezone.now():
+                    return order 
+        return None
     
     # FIELDS
-    supplier = models.ManyToManyField('Supplier', related_name='orders_supplier')
-    plan = models.ManyToManyField('Plan', related_name='orders_plan')
+    supplier = models.ForeignKey('Supplier', related_name='orders_supplier', on_delete=models.DO_NOTHING)
+    plan = models.ForeignKey('Plan', related_name='orders_plan', on_delete=models.DO_NOTHING)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(default= datetime.now() + timedelta(days=365))
@@ -25,4 +28,4 @@ class Order(models.Model):
     
     class Meta:
         app_label = '_web'
-        db_table = 'order'
+        db_table = 'supplier_order'           

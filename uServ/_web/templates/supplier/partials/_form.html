@@ -38,21 +38,15 @@
                         {% endif %}
                     </div>
                 {% endfor %}  
-                {% if password %}
+                {% if 'address' not in request.path %}
                     <div>                        
                         <label for="owner_name" class="mb-2 text-sm font-medium text-gray-900 dark:text-white">Representante</label>
                         <input id="id_owner_name" name="owner_name" type="text" disabled
                             value="{{ supplier.owner_name }}"
                             class="rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:inline-none focus:ring-purple-900 focus:bg-purple-50 focus:z-10 sm:text-sm" />
 
-                    </div>
-                    <div>                        
-                        <label for="password" class="mb-2 text-sm font-medium text-gray-900 dark:text-white">Senha de Acesso</label>
-                        <input id="id_password" name="password" type="password" required 
-                            class="rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:inline-none focus:ring-purple-900 focus:bg-purple-50 focus:z-10 sm:text-sm" />
-                        
-                    </div>
-                {% endif %}                
+                    </div>                
+                {% endif %}
             </div>
         </div>
     </div>

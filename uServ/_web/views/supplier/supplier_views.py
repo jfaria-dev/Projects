@@ -1,17 +1,13 @@
-from datetime import datetime
-from django.forms import ValidationError, inlineformset_factory
+from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.middleware.csrf import _add_new_csrf_cookie, get_token
 
-
-import requests
-from ...models import Order, Supplier, SupplierUser, SupplierAddress, SupplierDetails, api_get_supplier_information
+from ...models import SupplierOrder, Supplier, UserAuth, SupplierAddress, SupplierDetails, api_get_supplier_information, Plan, PaymentCard
 from ...models.common.screen_model import Screen
-from ...forms.supplier import SupplierForm, SupplierAddressForm, SupplierDetailsForm
+from ...forms.supplier import SupplierForm, SupplierAddressForm, SupplierDetailsForm, PaymentForm
 
 # ==================== FUNCTIONS ====================
 def _set_screen_content(request):
@@ -34,14 +30,15 @@ def _set_screen_content(request):
             }
 
 def _create_user_and_login(request, supplier, password):
-    supplier_user = SupplierUser.get_ByEmail(supplier.email)
+    supplier_user = UserAuth.get_ByEmail(supplier.email)
     if not supplier_user:
-        user = SupplierUser.objects.create_user(email=supplier.email, password=password, supplier=supplier)                
+        user_auth = UserAuth.objects.create_user(email=supplier.email, password=password, is_supplier=True)       
+        print(user_auth)      
     # LOGIN USER                 
     return auth.authenticate(request=request, username=supplier.email, password=password)
 
 def _update_csrf_token(request):
-    request.session['csrf_token'] = _add_new_csrf_cookie(request)
+    # request.session['csrf_token'] = _add_new_csrf_cookie(request)
     
     return request
 
@@ -168,6 +165,7 @@ def get_address_from_postal_code(request):
     response = SupplierAddress.api_get_addres_information(postal_code) 
     return JsonResponse( response )
 
+# AJAX - VALIDATE EMAIL IF EXISTS
 def validate_email(request):
     email = request.GET.get('email')
     if _exists_email(email):
@@ -177,10 +175,16 @@ def validate_email(request):
     return JsonResponse({ 
                         'message': 'E-mail válido.',
                         'exists': False})
-                         
+ 
+# AJAX - GET TYPE OF CREDIT CARD (VISA, MASTERCARD, ETC)
+def get_cc_type(request):
+    print('request.GET.get(card_number)', request.GET.get('card_number'))
+    number = request.GET.get('card_number')
+    cc_type = PaymentCard.get_cc_type(number)                       
+    print('cc_type', cc_type)
+    return JsonResponse({ 'cc_type': cc_type })
 
 # ==================== VIEWS =======================
-
 def home(request):
     form = SupplierForm()
     context = {
@@ -191,7 +195,6 @@ def home(request):
 
 def login_supplier(request):
     if request.method == 'POST':
-        errors=[]
         email = request.POST['email']
         password = request.POST['password']
         user_logged = auth.authenticate(request=request, username=email, password=password)
@@ -200,20 +203,18 @@ def login_supplier(request):
             
             # logica do que falta no registro
             supplier = Supplier.get_ByEmail(email)
-            if supplier.details is None:
-                return redirect('supplier:company_details', supplier.id)
-            elif supplier.address is None:
-                return redirect('supplier:company_address', supplier.id)
-            else: 
-                orders_valid = Order.get_BySupplierHasOrderValid(supplier.id)
-                if orders_valid is None:
-                    return redirect('supplier:sign_plan', supplier.id)
-                else:
-                    return redirect('supplier:home') # MUDAR PARA O DASHBOARD
-            
-            
-            
-            return redirect('supplier:home')
+            if supplier:
+                details = SupplierDetails.get_BySupplierId(supplier.id)
+                if details is None:
+                    return redirect('supplier:company_details', supplier.id)
+                elif supplier.address is None:
+                    return redirect('supplier:company_address', supplier.id)
+                else: 
+                    orders_valid = SupplierOrder.get_SupplierHasOrderValid(supplier)
+                    if orders_valid is None:
+                        return redirect('supplier:sign_plan', supplier.id)
+                    else:
+                        return redirect('panel:home', supplier.id)                  
         else:
             if _exists_email(email):
                 messages.success(request, 'Senha inválida.')
@@ -247,7 +248,7 @@ def register(request):
             if form.is_valid():
                 print('form: ', form)
                 supplier = form.save()
-                return redirect('supplier:company_details', supplier.id)
+                return redirect('supplier:create_password', supplier.id)
         
     context = {
         'form': form,
@@ -255,29 +256,52 @@ def register(request):
     }
     return render(request, 'supplier/register/register.html', context=context)
 
-@ensure_csrf_cookie
+def set_password(request, supplier_id):
+    """Set password for the supplier
+
+    Args:
+        request (request.POST): (password, password_confirm)
+
+    Returns:
+        Redirect: Company Details
+    """
+    supplier = Supplier.get_ById(supplier_id)
+    if request.method == 'POST':        
+        user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
+        if user_logged is not None:
+            supplier.user_auth = user_logged
+            supplier.save()
+            auth.login(request, user_logged)
+            return redirect('supplier:company_details', supplier.id)
+        return redirect('supplier:login')
+    return render(request, 'supplier/register/password.html', {'supplier': supplier})
+
+@login_required(login_url='login')
 def company_details(request, supplier_id):
     supplier = Supplier.get_ById(supplier_id)
     supplier_details = SupplierDetails.get_ById(supplier_id)      
     form = SupplierDetailsForm(request.POST or None, instance=supplier_details)
     if request.method == 'POST':
+        print(request.POST['birthdate'])
+        print(form)
         if form.is_valid():
             print(form)
             form.instance.supplier = supplier
+            # user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
+            # print(user_logged.id)
+            # if user_logged is not None:
+            #     auth.login(request, user_logged)
+            form.instance.user_auth = request.user
             supplier_details = form.save()
-            user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
-            if user_logged is not None:
-                auth.login(request, user_logged) 
-                return redirect('supplier:company_address', supplier_id)
-            return redirect('supplier:login')
+            return redirect('supplier:company_address', supplier_id)
     return render(request, 'supplier/register/company.html', {
         'form': form, 
-        'supplier': supplier,
-        'password': True})    
+        'supplier': supplier})    
 
-@ensure_csrf_cookie
 @login_required(login_url='login')
 def company_address(request, supplier_id):
+    
+    print(request.user)
     supplier = Supplier.get_ById(supplier_id)   
     address = SupplierAddress.get_BySupplierId(supplier_id) 
     form = SupplierAddressForm(request.POST or None, instance=address)    
@@ -308,4 +332,23 @@ def company_address(request, supplier_id):
     
 @login_required(login_url='login')
 def sign_plan(request, supplier_id):
-    return render(request, 'supplier/register/sign-plan.html')
+    
+    form = PaymentForm(request.POST or None)
+    if request.method == 'POST':
+        plan_id = request.POST.get('plan_id')
+        if form.is_valid():                
+            supplier = Supplier.get_ById(supplier_id)
+            plan = Plan.get_ById(plan_id)
+            supplier_order = SupplierOrder()
+            supplier_order.supplier = supplier
+            supplier_order.plan = plan
+            supplier_order.value = plan.price    
+            supplier_order.expires_at = datetime.now() + timedelta(days=plan.duration*30+5)  
+            supplier_order.save()
+            print('supplier_order: ', supplier_order.id)
+            form.instance.order = supplier_order
+            form.save()        
+            return redirect('panel:home', supplier_id=supplier_id)
+    print(form)
+    plans = Plan.getPlans() 
+    return render(request, 'supplier/register/sign-plan.html', {'plans': plans, 'form': form})

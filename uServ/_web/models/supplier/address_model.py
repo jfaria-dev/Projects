@@ -38,7 +38,7 @@ class SupplierAddress(models.Model):
         return SupplierAddress.objects.filter(supplier_id=supplier_id).first()
     
     # FIELDS
-    supplier = models.ForeignKey('Supplier', on_delete=models.CASCADE, related_name='address')
+    supplier = models.OneToOneField('Supplier', on_delete=models.CASCADE, related_name='address')
     street = models.CharField(max_length=200)
     number = models.CharField(max_length=10)
     complement = models.CharField(max_length=200, null=True, blank=True)
