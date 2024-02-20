@@ -29,9 +29,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     '_api',
-    '_search',
     '_web',
     '_panel',
+    '_utils',
     
     'rest_framework',
     'widget_tweaks',
@@ -69,6 +69,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': { # <----- add this
+                'filter_tags': '_utils.template_tags.filter_tags' # switch with your app name
+            }
         },
     },
 ]
@@ -122,11 +125,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
+USE_L10N = True
+USE_THOUSAND_SEPARATOR = True
+THOUSAND_SEPARATOR = "."
+DECIMAL_SEPARATOR = ","
 
 USE_TZ = True
 

@@ -56,7 +56,7 @@ class PaymentCard(models.Model):
     card_number = models.CharField(max_length=19, validators=[number_is_valid])
     card_holder_name = models.CharField(max_length=150)
     expiration_date = models.CharField(max_length=5, validators=[expirate_date])
-    security_code = models.CharField(max_length=4)
+    security_code = models.CharField(max_length=3)
     order = models.ForeignKey('SupplierOrder', on_delete=models.CASCADE, related_name='payment_card')
     created_at = models.DateTimeField(auto_now_add=True)
     

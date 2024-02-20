@@ -1,17 +1,12 @@
-{% comment %} <select name="general_service" class=" block w-full px-4 py-2 mt-1 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring" required="" id="id_general_service">
-    <option selected>---------</option>
-    {% for item in services %}
-        <option value="{{item.id}}">{{item.description}}</option>
-    {% endfor %}
-</select> {% endcomment %}
-
-<label for="general_service" class="block overflow-hidden bg-gray-100 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+{% comment %} <label for="general_service" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
     <span class="text-xs font-medium text-gray-700"> Serviços </span>
   
-    <select name="general_service" id="id_general_service" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-gray-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" >
+    <select name="general_service" id="id_general_service" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" > {% endcomment %}
         <option value="" selected>---------</option>
         {% for item in services %}
             <option value="{{item.id}}" {% if general_service == item.id %} selected {% endif %}>{{item.description}}</option>
         {% endfor %}
-    </select>    
-</label>   
+    {% comment %} </select>    
+</label>    {% endcomment %}
+
+

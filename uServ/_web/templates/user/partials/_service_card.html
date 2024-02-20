@@ -1,9 +1,82 @@
 <section class="bg-white dark:bg-gray-900">
-    {% if services %}          
+
+<!-- component -->
+
+{% if services or suppliers_details %}
+    <div class="bg-gray-100 font-sans flex items-center justify-center">
+        <div x-data="{ openTab: {% if services %}1 {% elif suppliers_details %} 2 {% endif %} }" class="p-8">
+            <div class="mx-auto w-full">
+                <div class="mb-4 w-full flex space-x-4 p-2 bg-white rounded-lg shadow-md">
+                    <button x-on:click="openTab = 1" :class="{ 'bg-purple-500 text-white': openTab === 1 }" class="w-full flex-1 py-2 px-4 rounded-md focus:outline-none focus:shadow-outline-purple transition-all duration-300">Serviços</button>
+                    <button x-on:click="openTab = 2" :class="{ 'bg-purple-500 text-white': openTab === 2 }" class="w-full flex-1 py-2 px-4 rounded-md focus:outline-none focus:shadow-outline-purple transition-all duration-300">Prestadores</button>
+            
+                </div>
+
+                {% if services %}          
+                    <div x-show="openTab === 1" class="w-full transition-all duration-300 bg-white p-4 rounded-lg shadow-md border-l-4 border-purple-600">
+                        <div class="max-w-screen-xl px-4 pb-8 mx-auto lg:pb-16">
+                            <div class="grid  gap-8 text-gray-500 sm:gap-12 sm:grid-cols-1 lg:grid-cols-2 dark:text-gray-400">
+                                {% for service in services %}
+                                <a href="{% url "schedule:service" service.id %}">
+                                    <div class="flex bg-gray-100 dark:bg-gray-800 p-4 w-[350px] rounded-lg shadow-md">
+                                        <div class="flex-initial px-4">
+                                            <img src="{% if service.service_image %} {{service.service_image}} {% endif %}" alt="John Michael" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
+                                        </div>
+                                        <div class="flex-initial px-4">
+                                            <h3 class="font-semibold mb-2">{{service.general_service}}</h3>
+                                            <p class="text-gray-700 dark:text-gray-300 mb-2">{{service.supplier.details.company_name_show}}</p>
+                                            <p class="text-gray-700 dark:text-gray-300 mb-2">R$ {{service.price}} por {{service.unit}}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if suppliers_details %}      
+                    <div x-show="openTab === 2" class="w-full transition-all duration-300 bg-white p-4 rounded-lg shadow-md border-l-4 border-purple-600">
+                        <div class="max-w-screen-xl px-4 pb-8 mx-auto lg:pb-16">
+                            <div class="grid  gap-8 text-gray-500 sm:gap-12 sm:grid-cols-1 lg:grid-cols-2 dark:text-gray-400">               
+                                {% for details in suppliers_details %}
+                                    <a href="{% url "supplier:supplier" details.id %}">
+                                        <div class="flex bg-gray-100 dark:bg-gray-800 p-4 w-[350px] rounded-lg shadow-md">
+                                            <div class="flex-initial px-4">
+                                                <img src="{% if details.photo %}{{details.photo.url}}{% endif %}" alt="{{details.company_name_show}}" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
+                                            </div>
+                                            <div class="flex-initial px-4">
+                                                <h3 class="text-xl font-semibold mb-2">{{details.company_name_show}}</h3>
+                                                <p class="text-xs text-gray-700 dark:text-gray-300 mb-2">{{details.company_name}}</p> 
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+
+
+
+
+
+
+
+
+   
+    {% comment %} {% if services %}          
         <h2 class="block text-center font-semibold text-xl mb-4">Serviços</h2>  
         <div class="max-w-screen-xl px-4 pb-8 mx-auto lg:pb-16">
             <div class="grid grid-cols-2 gap-8 text-gray-500 sm:gap-12 sm:grid-cols-3 lg:grid-cols-3 dark:text-gray-400">
                 {% for service in services %}
+                <a href="{% url "schedule:service" service.id %}">
                     <div class="flex bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
                         <div class="flex-initial px-4">
                             <img src="{{ media_url }}{{service.service_image}}" alt="John Michael" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
@@ -14,29 +87,31 @@
                             <p class="text-gray-700 dark:text-gray-300 mb-2">R$ {{service.price}} por {{service.unit}}</p>
                         </div>
                     </div>
+                </a>
                 {% endfor %}
             </div>
         </div>
     {% endif %}
 
-    {% if suppliers %}      
+    {% if suppliers_details %}      
         <h2 class="block text-center font-semibold text-xl mb-4">Fornecedores</h2>   
         <div class="max-w-screen-xl px-4 pb-8 mx-auto lg:pb-16">
             <div class="grid grid-cols-2 gap-8 text-gray-500 sm:gap-12 sm:grid-cols-3 lg:grid-cols-3 dark:text-gray-400">               
-                {% for supplier in suppliers %}
-                    <div class="flex bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                        <div class="flex-initial px-4">
-                            <img src="{{ media_url }}{{supplier.photo}}" alt="{{supplier.company_name_show}}" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
+                {% for details in suppliers_details %}
+                    <a href="{% url "supplier:supplier" details.id %}">
+                        <div class="flex bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                            <div class="flex-initial px-4">
+                                <img src="{{ media_url }}{{details.photo}}" alt="{{details.company_name_show}}" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
+                            </div>
+                            <div class="flex-initial px-4">
+                                <h3 class="text-xl font-semibold mb-2">{{details.company_name_show}}</h3>
+                                <p class="text-xs text-gray-700 dark:text-gray-300 mb-2">{{details.company_name}}</p> 
+                            </div>
                         </div>
-                        <div class="flex-initial px-4">
-                            <h3 class="text-xl font-semibold mb-2">{{supplier.company_name_show}}</h3>
-                            {% comment %} <p class="text-gray-700 dark:text-gray-300 mb-2">{{service.general_service}}</p>
-                            <p class="text-gray-700 dark:text-gray-300 mb-2">R$ {{service.price}} por {{service.unit}}</p> {% endcomment %}
-                        </div>
-                    </div>
+                    </a>
                 {% endfor %}
             </div>
         </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
     
 </section>

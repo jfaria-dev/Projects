@@ -11,9 +11,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="pt-[80px] flex flex-col items-center justify-center">
-    {% include 'supplier/partials/_step-bar.html' %}
-    <h1 class="text-4xl font-bold text-gray-900 my-8">Escolha um plano</h1>
+{% include 'supplier/partials/_step-bar.html' %}
+<div class=" flex flex-col items-center justify-center">
     {% if form.errors %}
         {% for error in form.errors %}
             <div class="alert alert-danger" role="alert">
@@ -52,9 +51,8 @@
   <script src="{% static 'js/jquery.mask.min.js' %}"></script>
   <script>
     $(document).ready(function() {
-        $('#id_card_number').mask('0000 0000 0000 0000');
-        $('#id_expiration_date').mask('00/00');
-        $('#id_security_code').mask('000');   
+        $('input[name="card_number"]').mask('0000 0000 0000 0000');
+        $('input[name="expiration_date"]').mask('00/00');    
     
     });
     

@@ -1,4 +1,6 @@
 # COMMON
+from .common.city_model import City
+from .common.state_model import State
 from .common.menu_model import Menu
 from .common.screen_model import Screen
 from .common.user_auth import UserAuth
@@ -16,3 +18,8 @@ from .supplier.payment_model import PaymentCard
 
 # USER
 from .user.user_model import User
+
+
+# SCHEDULE
+from .schedule.availability_model import Availability
+from .schedule.events_model import Event

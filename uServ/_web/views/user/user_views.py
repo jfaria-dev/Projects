@@ -14,6 +14,7 @@ def _create_user_and_login(request, email, password):
     return auth.authenticate(request=request, username=email, password=password)
 
 # --------------- AJAX FUNCTIONS ---------------
+# Save location in session
 def save_location_session(request):
     if request.method == 'POST':
         request.session['latitude'] = request.POST['latitude']
@@ -23,35 +24,41 @@ def save_location_session(request):
 # Search
 def search(request):
     query = request.GET.get('q')
+    city = request.GET.get('city')
     if query != '':
-        services = GeneralService.get_Services(query)
-        suppliers = SupplierDetails.get_BySuppliersName(query)        
-        media_url = request.build_absolute_uri('/media/') 
-        return render(request, 'user/partials/_service_card.html', context= { 'services': services, 'suppliers': suppliers, 'media_url': media_url })
-    else:
-        return render(request, 'user/partials/_segments.html', context= { 'segments': Category.get_Segment()[:3] })
+        if city != '':            
+            services = GeneralService.get_Services(query, city)
+            suppliers_details = SupplierDetails.get_BySuppliersName(query, city)    
+            print('services', services)    
+            return render(request, 'user/partials/_service_card.html', context= { 'services': services, 'suppliers_details': suppliers_details })
+    return render(request, 'user/partials/_segments.html', context= { 'segments': Category.get_Segments()[:3]})
 
 
 # --------------- VIEWS --------------
+
 def home(request):
-    segments = Category.get_Segment()[3:]    
-    media_url = request.build_absolute_uri('/media/') 
+    if request.user.is_authenticated:
+        if request.user.is_supplier:
+            logout(request)
+    segments = Category.get_Segments()[:3] 
     
     context = {
         'segments': segments,
-        'media_url': media_url
     }
     return render(request, 'user/index.html', context=context)
 
 def login(request):
+    message = ''
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
         user_logged = auth.authenticate(request=request, username=email, password=password)
-        if user_logged is not None:
+        if user_logged is not None and user_logged.is_client:
             auth.login(request, user_logged) 
             return redirect('home')
-    return render(request, 'user/authenticate/login.html')
+        message = 'Usuário não existe.'
+    
+    return render(request, 'user/authenticate/login.html', context={'message': message})
 
 def logout(request):
     auth.logout(request)
@@ -71,5 +78,3 @@ def register(request):
         
         return redirect('home')
     return render(request, 'user/register/register.html')
-
-

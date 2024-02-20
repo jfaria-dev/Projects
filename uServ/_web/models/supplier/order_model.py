@@ -11,11 +11,10 @@ class SupplierOrder(models.Model):
         return SupplierOrder.objects.filter(supplier_id=supplier_id).first()
     
     def get_SupplierHasOrderValid(supplier):
-        orders = SupplierOrder.objects.filter(supplier=supplier)
+        # orders = SupplierOrder.objects.filter(supplier=supplier)
+        orders = supplier.orders_supplier.filter(expires_at__gt=timezone.now())
         if orders.count() > 0:
-            for order in orders:
-                if order.expires_at > timezone.now():
-                    return order 
+            return orders
         return None
     
     # FIELDS

@@ -1,42 +1,82 @@
 {% extends 'layout/base-web.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
-{% block title %}
-  Cadastro
-{% endblock %}
+{% block title %} Cadastro {% endblock %}
 
-{% block head %}
+{% comment %} {% block head %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-{% endblock %}
+{% endblock %} {% endcomment %}
 
 {% block content %}
-    <div>
-        <div class="pt-[80px] text-center justify-self-center justify-center items-center">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white md:text-4xl">Cadastro de Informações</h2>
-        </div>
-    </div>
-    {% if fdeails.errors %}
-        <div>
-            {% for error in fdeails.errors %}
+    {% include 'supplier/partials/_step-bar.html' %}
+    <section class="max-w-4xl p-6 mx-auto bg-purple-100 rounded-md shadow-md dark:bg-purple-800 mt-5">
+        {% if form.errors %}
+            <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                <p class="font-bold">Nem tudo é o que parece....</p>
+                {% for error in form.errors %}
+                    <p>{{error}}</p>
+                {% endfor %}
+            </div>            
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-1">
                 <div>
-                    <span>{{ error }}</span>
-                </div>
-            {% endfor %}            
-        </div>
-    {% endif %}
-    {% if faddress.errors %}
-        <div>
-            {% for error in faddress.errors %}
+                    <label for="id_postal_code" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_postal_code"> CEP </span>
+                        {{ form.postal_code|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div>   
                 <div>
-                    <span>{{ error }}</span>
+                    <label for="id_street" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_street"> Logradouro </span>
+                        {{ form.street|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div> 
+                <div>
+                    <label for="id_number" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_number"> Número </span>
+                        {{ form.number|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div> 
+                <div>
+                    <label for="id_complement" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_complement"> Complemento </span>
+                        {{ form.complement|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div> 
+                <div>
+                    <label for="id_neighborhood" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_neighborhood"> Bairro </span>
+                        {{ form.neighborhood|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div> 
+                <div>
+                    <label for="id_city" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_city"> Cidade </span>
+                        {{ form.city|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div> 
+                <div>
+                    <label for="id_state" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700" id="label_state"> Estado </span>
+                        {{ form.state|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div>  
+                <div class="text-center">
+                    <button type="submit" class="text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                        <div class="flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                            </svg>
+                            <span>&nbsp&nbsp&nbsp&nbsp Continuar</span>
+                        </div>
+                    </button>
                 </div>
-            {% endfor %}            
-        </div>
-    {% endif %}
-    {% include "supplier/partials/_form.html" %}
-    
-    
-    
+            </div>
+        </form>
+    </section>
 
     <div id="loading" class="z-auto fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-white bg-opacity-50">
         <img src="{% static 'images/Infinity-1s-200px.svg' %}" alt="">

@@ -3,11 +3,12 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import ensure_csrf_cookie
+from _utils.decorator import auth_supplier_required
 
-from ...models import SupplierOrder, Supplier, UserAuth, SupplierAddress, SupplierDetails, api_get_supplier_information, Plan, PaymentCard
-from ...models.common.screen_model import Screen
-from ...forms.supplier import SupplierForm, SupplierAddressForm, SupplierDetailsForm, PaymentForm
+from _web.models import Screen, SupplierOrder, Supplier, UserAuth, SupplierAddress, SupplierDetails, api_get_supplier_information, Plan, PaymentCard
+from _panel.models import Category
+
+from _web.forms.supplier import SupplierForm, SupplierAddressForm, SupplierDetailsForm, PaymentForm
 
 # ==================== FUNCTIONS ====================
 def _set_screen_content(request):
@@ -49,7 +50,7 @@ def _exists_email(email):
 
 # ==================== AJAX ========================
 # AJAX - GET COMPANY INFORMATION FROM DOCUMENT NUMBER
-def get_company_from_document(request=None, document_number=None):
+def get_company_from_document(request):
     """Get the information about the company from the document number
 
     Args:
@@ -91,19 +92,18 @@ def get_company_from_document(request=None, document_number=None):
             "capital_social": "60000.00",
         }
     """
-    if document_number: 
-        response = api_get_supplier_information(document_number) 
-        return response
-    else:
-        response = api_get_supplier_information(request.GET.get('company_document_number')) 
+    document = request.GET.get('company_document_number')
+    if document:
+        response = api_get_supplier_information(document) 
         return JsonResponse(response)
 
 # AJAX - GET PROFESSIONAL INFORMATION FROM DOCUMENT NUMBER AND BIRTHDATE
 def get_professional_from_document(request):   
     date_format = "%d-%m-%Y"
+    print(request.GET.get('birthdate'))
     birthdate = datetime.strptime(request.GET.get('birthdate'), date_format).strftime('%Y-%m-%d')
+    document = request.GET.get('document_number')
     # response = api_get_supplier_information(request.GET.get('document_number'), birthdate)
-    
     data_test = {
         "code": 200,
         "code_message": "A requisição foi processada com sucesso.",
@@ -186,6 +186,9 @@ def get_cc_type(request):
 
 # ==================== VIEWS =======================
 def home(request):
+    # if request.user.is_authenticated:
+    #     if request.user.is_client:
+    #         auth.logout(request)
     form = SupplierForm()
     context = {
         'content_page': _set_screen_content(request),
@@ -198,7 +201,8 @@ def login_supplier(request):
         email = request.POST['email']
         password = request.POST['password']
         user_logged = auth.authenticate(request=request, username=email, password=password)
-        if user_logged is not None:
+        
+        if user_logged is not None and user_logged.is_supplier:
             auth.login(request, user_logged) 
             
             # logica do que falta no registro
@@ -207,8 +211,9 @@ def login_supplier(request):
                 details = SupplierDetails.get_BySupplierId(supplier.id)
                 if details is None:
                     return redirect('supplier:company_details', supplier.id)
-                elif supplier.address is None:
-                    return redirect('supplier:company_address', supplier.id)
+                address = SupplierAddress.get_BySupplierId(supplier.id)
+                if address is None:
+                        return redirect('supplier:company_address', supplier.id)
                 else: 
                     orders_valid = SupplierOrder.get_SupplierHasOrderValid(supplier)
                     if orders_valid is None:
@@ -248,7 +253,13 @@ def register(request):
             if form.is_valid():
                 print('form: ', form)
                 supplier = form.save()
-                return redirect('supplier:create_password', supplier.id)
+                
+                user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
+                if user_logged is not None:
+                    supplier.user_auth = user_logged
+                    supplier.save()
+                    auth.login(request, user_logged)
+                    return redirect('supplier:company_details', supplier.id)
         
     context = {
         'form': form,
@@ -256,67 +267,38 @@ def register(request):
     }
     return render(request, 'supplier/register/register.html', context=context)
 
-def set_password(request, supplier_id):
-    """Set password for the supplier
-
-    Args:
-        request (request.POST): (password, password_confirm)
-
-    Returns:
-        Redirect: Company Details
-    """
-    supplier = Supplier.get_ById(supplier_id)
-    if request.method == 'POST':        
-        user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
-        if user_logged is not None:
-            supplier.user_auth = user_logged
-            supplier.save()
-            auth.login(request, user_logged)
-            return redirect('supplier:company_details', supplier.id)
-        return redirect('supplier:login')
-    return render(request, 'supplier/register/password.html', {'supplier': supplier})
-
-@login_required(login_url='login')
+@login_required(login_url='supplier:login')
+@auth_supplier_required
 def company_details(request, supplier_id):
     supplier = Supplier.get_ById(supplier_id)
-    supplier_details = SupplierDetails.get_ById(supplier_id)      
-    form = SupplierDetailsForm(request.POST or None, instance=supplier_details)
+    supplier_details = SupplierDetails.get_BySupplierId(supplier_id) 
+    if supplier_details:
+        if supplier_details.birthdate:
+            supplier_details.birthdate = supplier_details.birthdate.strftime('%d/%m/%Y')
+       
+    form = SupplierDetailsForm(request.POST or None, request.FILES or None, instance=supplier_details)
     if request.method == 'POST':
-        print(request.POST['birthdate'])
-        print(form)
+        segment = Category.get_ById(request.POST['segment'])
+        print(segment.name)
+        form.instance.segment = segment        
         if form.is_valid():
-            print(form)
             form.instance.supplier = supplier
-            # user_logged = _create_user_and_login(request, supplier=supplier, password=request.POST['password'])
-            # print(user_logged.id)
-            # if user_logged is not None:
-            #     auth.login(request, user_logged)
             form.instance.user_auth = request.user
             supplier_details = form.save()
             return redirect('supplier:company_address', supplier_id)
-    return render(request, 'supplier/register/company.html', {
+    # print(form)
+    return render(request, 'supplier/register/details.html', {
         'form': form, 
-        'supplier': supplier})    
+        'supplier': supplier,
+        'step': 1})    
 
 @login_required(login_url='login')
-def company_address(request, supplier_id):
-    
+@auth_supplier_required
+def company_address(request, supplier_id):    
     print(request.user)
     supplier = Supplier.get_ById(supplier_id)   
     address = SupplierAddress.get_BySupplierId(supplier_id) 
-    form = SupplierAddressForm(request.POST or None, instance=address)    
-    
-    if form.data.__len__() == 0 and supplier.details.document_type == 'CNPJ':
-        supplier_json = get_company_from_document(document_number=supplier.details.company_document_number)
-        address = SupplierAddress()
-        address.postal_code = supplier_json['cep']
-        address.street = supplier_json['logradouro']
-        address.number = supplier_json['numero']
-        address.complement = supplier_json['complemento']
-        address.neighborhood = supplier_json['bairro']
-        address.city = supplier_json['municipio']
-        address.state = supplier_json['uf']   
-        form.instance = address    
+    form = SupplierAddressForm(request.POST or None, instance=address)   
     
     if request.method == 'POST':
         print('form', form)
@@ -328,11 +310,12 @@ def company_address(request, supplier_id):
     
     return render(request, 'supplier/register/address.html', {
         'form': form, 
-        'supplier': supplier,})
+        'supplier': supplier,
+        'step': 2})
     
 @login_required(login_url='login')
-def sign_plan(request, supplier_id):
-    
+@auth_supplier_required
+def sign_plan(request, supplier_id):    
     form = PaymentForm(request.POST or None)
     if request.method == 'POST':
         plan_id = request.POST.get('plan_id')
@@ -351,4 +334,12 @@ def sign_plan(request, supplier_id):
             return redirect('panel:home', supplier_id=supplier_id)
     print(form)
     plans = Plan.getPlans() 
-    return render(request, 'supplier/register/sign-plan.html', {'plans': plans, 'form': form})
+    return render(request, 'supplier/register/sign-plan.html', {'plans': plans, 'form': form, 'step': 3})
+
+def supplier(request, supplier_id):
+    supplier_details = SupplierDetails.get_ById(supplier_id)
+    print(supplier_details.company_name)
+    print(supplier_details.supplier.email)   
+    services = supplier_details.supplier.offered_services.filter(active=True)
+    
+    return render(request, 'supplier/supplier.html', context= { 'supplier_details': supplier_details, 'services': services })

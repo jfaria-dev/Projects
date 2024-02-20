@@ -17,7 +17,7 @@
         </div>
         <div class="lg:mt-0 lg:col-span-5 lg:flex">
             <div class="w-full max-w-md py-20">
-                <form action="{% url "supplier:register" %}" method="POST" class="space-y-6 bg-white dark:bg-gray-800 p-8 border border-gray-200 rounded-lg shadow-sm dark:border-gray-700">
+                <form action="{% url "supplier:register" %}" method="POST" class="space-y-3 bg-white dark:bg-gray-800 p-8 border border-gray-200 rounded-lg shadow-sm dark:border-gray-700">
                     {% csrf_token %}
                     {% if form.errors %}
                         {% for error in form.errors %}
@@ -28,14 +28,14 @@
                         <div class="rounded-md shadow-sm -space-y-px">
                             <div>
                                 {% if field.field.widget.input_type == 'email' %}
-                                    <label for="{{ field.id_for_label }}" >{{ field.label }}</label>
+                                    {% comment %} <label for="{{ field.id_for_label }}" >{{ field.label }}</label> {% endcomment %}
                                     <label class="relative text-gray-400 focus-within:text-gray-600 block" for="{{ field.id_for_label }}">
                                         <img id='svg_{{ field.id_for_label }}' src="{% static 'images/mail.svg' %}" alt="mail" class="pointer-events-none w-8 h-8 absolute top-1/2 transform -translate-y-1/2 left-3"/>
                                         <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="{{ field.field.widget.input_type }}" placeholder="{{ field.label }}" value="{% if field.value %}{{field.value}}{% endif %}" required 
                                             class="form-input rounded-lg border border-gray-300 py-2 px-4 bg-white placeholder-gray-500 text-gray-500 appearance-none w-full block pl-14 focus:outline-none">
                                     </label>
                                 {% else %}
-                                    <label for="{{ field.id_for_label }}" >{{ field.label }}</label>
+                                    {% comment %} <label for="{{ field.id_for_label }}" >{{ field.label }}</label> {% endcomment %}
                                     <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="{{ field.field.widget.input_type }}" autocomplete="{{ field.autocomplete }}" value="{% if field.value %}{{field.value}}{% endif %}" required 
                                     class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
                                     placeholder="{{ field.label }}">
@@ -43,8 +43,14 @@
                             </div>
                         </div>
                     {% endfor %}
+                    <div class="mb-4">
+                        {% comment %} <label for="password" >Senha</label> {% endcomment %}
+                        <input type="password" id="password" name="password" placeholder="Informe sua Senha" required
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm">
+                    </div>
                     <div>
-                        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        <button type="submit" 
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                             Cadastrar
                         </button>
                     </div>

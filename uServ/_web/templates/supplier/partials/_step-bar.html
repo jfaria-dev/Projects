@@ -1,27 +1,68 @@
-<ol class="flex items-center w-500 text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
-    <li class="flex md:w-full items-center text-purple-600 dark:text-blue-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
-        <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
-            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-            </svg>
-            Informações
-        </span>
-    </li>
-    <li class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
-        <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
-            <span class="me-2">2</span>
-            Endereço
-        </span>
-    </li>
-    <li class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
-        <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
-            <span class="me-2">2</span>
-            Endereço
-        </span>
-    </li>
-    <li class="flex items-center">
-        <span class="me-2">3</span>
-        Planos
-    </li>
-    
-</ol>
+<div class="max-w-screen-lg pt-[50px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between">
+
+    {% comment %} <div class="text-center">
+        <p class="mt-4 text-sm leading-7 text-gray-500 font-regular">
+            STEPS
+        </p>
+        <h3 class="text-3xl sm:text-5xl leading-normal font-extrabold tracking-tight text-gray-900">
+            How it <span class="text-indigo-600">Works?</span>
+        </h3>
+
+    </div> {% endcomment %}
+
+    <div class="mt-20">
+        <ul class="md:grid md:grid-cols-3 md:col-gap-10 md:row-gap-10 ">
+            <a href="{% url "supplier:company_details" request.user.supplier.id %}">
+                <li class="  p-5 pb-5 text-center rounded-l-lg">
+                    <div class="flex flex-col items-center">
+                        <div class="flex-shrink-0 relative top-0 -mt-16">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-full 
+                            {% if step == 1 %} bg-purple-500 text-white {% elif step == 2 or step == 3 %} bg-lime-400 text-white{% endif %}
+                            border-4 border-white text-xl font-semibold">
+                            {% if step == 1 %} 1 {% elif step == 2 or step == 3 %} <i class="fa-solid fa-check"></i> {% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <h4 class="text-lg leading-6 font-semibold
+                            {% if step == 1 %} text-purple-700 {% elif step == 2 or step == 3 %} text-lime-500 {% endif %}">Informações</h4>
+                        </div>
+                    </div>
+                </li>
+            </a>
+            <a href="{% url "supplier:company_address" request.user.supplier.id %}">
+                <li class="  p-5 pb-10 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="flex-shrink-0 relative top-0 -mt-16">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-full 
+                            {% if step == 2 %} bg-purple-500 text-white {% elif step == 3 %} bg-lime-300 text-white {% elif step == 1 %} bg-gray-300 text-white {% endif %}
+                            border-4 border-white text-xl font-semibold">
+                            {% if step == 2 or step == 1 %} 2 {% elif step == 3 %} <i class="fa-solid fa-check"></i> {% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <h4 class="text-lg leading-6 font-semibold 
+                            {% if step == 2 %} text-purple-700 {% elif step == 3 %} text-lime-500 {% elif step == 1 %} text-gray-400 {% endif %}">Endereço</h4>
+                        </div>
+                    </div>
+                </li>
+            </a>
+            <li class=" p-5 pb-10 text-center">
+                <div class="flex flex-col items-center">
+                    <div class="flex-shrink-0 relative top-0 -mt-16">
+                        <div class="flex items-center justify-center h-10 w-10 rounded-full
+                        {% if step == 3 %} bg-purple-500 text-white {% elif step == 1 or step == 2 %} bg-gray-300 text-white {% endif %} 
+                          border-4 border-white text-xl font-semibold">
+                          3
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <h4 class="text-lg leading-6 font-semibold 
+                        {% if step == 3 %} text-purple-700 {% elif step == 1 or step == 2 %} text-gray-400 {% endif %} ">Plano</h4>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+</div>

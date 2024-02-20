@@ -13,9 +13,11 @@ class GeneralService(models.Model):
         db_table = 'general_service'
         
     # METHODS
-    def get_Services(query): 
+    def get_Services(query, city): 
         general_services = GeneralService.objects.filter(description__icontains=query)
-        services :list(Service)= []
+        services = []
         for general_service in general_services:
-            services.extend(general_service.services.all())
+            print(general_service)
+            services.extend(general_service.services.filter(supplier__address__city__icontains=city))
+            # services.extend(general_service.services.all())
         return services	

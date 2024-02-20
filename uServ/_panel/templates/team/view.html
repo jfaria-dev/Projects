@@ -1,0 +1,31 @@
+{% extends "layout/base-panel.html" %}
+{% load widget_tweaks %}
+
+
+{% block title %}Equipes{% endblock title %}
+
+
+{% block content %}
+    {% comment %} <section class="max-w-4xl p-6 mx-auto bg-purple-100 rounded-md shadow-md dark:bg-purple-800 mt-5"> {% endcomment %}
+<section class="relative max-w-4xl p-6 mx-auto rounded-md shadow-md dark:bg-purple-800 mt-5 ">
+
+    <a href="{% url "panel:fetch_teams" request.user.supplier.id %}" class="text-purple-500 text-2xl">
+        <i class="fa-solid fa-circle-arrow-left"></i>
+    </a> 
+    <h1 class="text-2xl text-center font-bold text-purple-700 capitalize dark:text-purple-100">Equipe</h1>
+    <h1 class="text-xl text-center font-semibold text-purple-700 capitalize dark:text-purple-100">{{team.name}}</h1>
+    {% if team.description %}
+    <p class="text-sm m-5 text-center">{{team.description}}</p>
+    {% endif %}
+    <div class="flex justify-start">
+        <a href="{% url "panel:add_worker" request.user.supplier.id team.id %}" 
+        class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-purple-500 rounded-md hover:bg-purple-700 focus:outline-none focus:bg-gray-600">
+            <i class="fa-solid fa-user-plus "></i> &nbsp; Cadastrar
+        </a>
+    </div>
+    {% include "team/partials/_workers.html" %}
+</section>
+        
+     
+{% endblock content %}
+

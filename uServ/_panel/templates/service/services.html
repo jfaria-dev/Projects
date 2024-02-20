@@ -1,0 +1,105 @@
+{% extends "layout/base-panel.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class='mt-[80px]'>
+        <a href="{% url 'panel:add_service' request.user.supplier.id %}" 
+            class="mt-[80px] text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 
+            font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 
+            sm:mr-2 lg:mr-0 dark:bg-purple-600 dark:hover:bg-purple-700 
+            focus:outline-none dark:focus:ring-purple-800">Cadastrar Serviço</a>
+    </div>
+    <br>
+    <br>
+    <table class="mt-4 w-full min-w-max table-auto text-left">
+        <thead>
+            <tr>
+                <th class="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
+                    <p class="antialiased font-sans text-sm text-blue-gray-900 flex items-center justify-between gap-2 font-normal leading-none opacity-70">Serviço <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                    </svg>
+                    </p>
+                </th>
+                <th class="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
+                    <p class="antialiased font-sans text-sm text-blue-gray-900 flex items-center justify-between gap-2 font-normal leading-none opacity-70">Valor <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                    </svg>
+                    </p>
+                </th>
+                <th class="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
+                    <p class="antialiased font-sans text-sm text-blue-gray-900 flex items-center justify-between gap-2 font-normal leading-none opacity-70">Status <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                    </svg>
+                    </p>
+                </th>
+                <th class="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
+                    <p class="antialiased font-sans text-sm text-blue-gray-900 flex items-center justify-between gap-2 font-normal leading-none opacity-70">Prazo <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                    </svg>
+                    </p>
+                </th>
+                <th class="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
+                    <p class="antialiased font-sans text-sm text-blue-gray-900 flex items-center justify-between gap-2 font-normal leading-none opacity-70">Alterar/Desativar</p>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            {% for service in services %}
+                <tr class="border-b border-blue-gray-50 hover:bg-purple-100">
+                    <td class="p-4">
+                        <a href="{% url "panel:edit_service" service.supplier.id service.id %}">                         
+                            <div class="flex items-center gap-3">
+                                {% if service.service_image %}
+                                    <img src="{{ media_url }}{{service.service_image}}" alt="John Michael" class="inline-block relative object-cover object-center !rounded-full w-9 h-9 rounded-md">
+                                {% else %}
+                                <div class="text-2xl text-purple-400 h-9 w-9 bg-purple-100 text-center rounded-full">
+                                    <i class="fa-solid fa-camera-retro "></i>
+                                </div>
+                                {% endif %}
+                                <div class="flex flex-col">
+                                    
+                                    <p class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal">{{service.general_service.category}}</p>
+                                    <p class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal opacity-70">{{service.general_service}}</p>
+                                </div>
+                            </div>
+                        </a> 
+                    </td>
+                    <td class="p-4">
+                        <div class="flex flex-col">
+                        <p class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal">R$ {{service.price}}</p>
+                        <p class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal opacity-70">por {{service.unit_for_service}}</p>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="w-max">
+                        <div class="relative grid items-center font-sans font-bold uppercase whitespace-nowrap select-none {% if service.active %}bg-green-500/20 text-green-600 {% else %}bg-red-500/20 text-red-600{% endif %}  py-1 px-2 text-xs rounded-md" style="opacity: 1;">
+                            <span class="">{% if service.active %}Ativo {% else %}Inativo{% endif %}</span>
+                        </div>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <p class="block antialiased font-sans text-sm leading-normal text-blue-gray-900 font-normal">{{service.execution_time}} {{service.unit_of_execution}}</p>
+                    </td>
+                    <td class="flex p-4 gap-5 text-xl text-center">
+                        <a href="{% url "panel:edit_service" service.supplier.id service.id %}" class="text-purple-500 " data-tooltip-target="tooltip-default">
+                            <i class="fa-solid fa-marker"></i>
+                        </a>   
+                        <a href="{% url "panel:delete_service" service.supplier.id service.id %}" class="text-red-500">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>    
+                        
+                        <!-- Tooltips -->
+                        <div id="tooltip-default" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                            Tooltip content
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </td>                    
+                </tr>
+            {% endfor %}
+            
+          
+        </tbody>
+    </table>
+{% endblock content %}

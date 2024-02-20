@@ -1,20 +1,26 @@
 
-<form method="POST">
+{% load filter_tags %}
+
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="lg:mt-0 lg:col-span-5 lg:flex gap-8 justify-center">
         <div class="w-full max-w-md py-10">
-            <div class="space-y-3 bg-white dark:bg-gray-800 border p-5 border-gray-200 rounded-lg shadow-sm dark:border-gray-700">               
+            <div class="space-y-3 bg-white dark:bg-gray-800 border p-5 border-gray-200 rounded-lg shadow-sm dark:border-gray-700">    
+                  
                 {% for field in form %}
-                    <div>                        
+                    <div id="div_{{field.name}}">                        
                         <label for="{{ field.id_for_label }}" class="mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ field.label }}</label>
                         {% if field.field.widget.input_type == 'select' %}
                             <select id="{{ field.id_for_label }}" name="{{ field.name }}" autocomplete="{{ field.autocomplete }}" placeholder="{{ field.field.widget.attrs.placeholder }}" required class="rounded-lg relative block w-full px-3 py-2 bg-purple-500 border border-purple-300 placeholder-purple-500 text-white rounded-t-md focus:inline-none focus:ring-purple-900 focus:z-10 sm:text-sm">  
                                 {% for key, name in field.field.choices %}
                                     <option value="{{ key }}" class='bg-purple-300' {% if field.value == name %}selected{% endif %}  >{{ name }}</option>
                                 {% endfor %}
-                            </select>   
+                            </select>  
+                        {% elif field.field.widget.input_type == 'checkbox' %} 
+                            <input id="{{ field.id_for_label }}" name="{{ field.name }}" type="checkbox" class="mx-10" checked="{{ field.value }}" />
+
                         {% elif field.field.widget.input_type == 'date' %}                        
-                            <div class="relative h-10 w-full min-w-[200px]">
+                            <div class="relative h-10 w-full min-w-[200px]" >
                                 <input
                                     id="{{ field.id_for_label }}"
                                     name="{{ field.name }}"
@@ -24,13 +30,41 @@
                                     class="peer rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:inline-none focus:ring-purple-900 focus:bg-purple-50 focus:z-10 sm:text-sm"
                                 />
                             </div>
-
+                        {% elif field.field.widget.input_type == 'file' %}    
+                            <div class="flex items-center justify-center w-full">
+                                <label for="id_photo" class="flex flex-col items-center justify-center w-full h-30 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-zinc-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-purple-50 hover:border-purple-700 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        {% if form.photo.value != None %}
+                                            <img id="imagem-preview" src="{{form.photo.value.url}}" class="w-10 h-10" alt="">
+                                            {% with form.photo.value|split:"/" as ps %}
+                                                {% for p in ps %}
+                                                    {% if '.' in p %}
+                                                        <span id='name-image' class="text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal">{{p}}</span></span>    
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endwith %}
+                                        {% else %}   
+                                            <div id="image-icon">
+                                                <svg class="w-8 h-8 mb-4 text-purple-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                                </svg> 
+                                            </div>                                 
+                                            <span id='name-image' class="hidden text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal"></span></span>
+                                        {% endif %}
+                                        
+                                        <p class="mb-2 text-sm text-purple-500 dark:text-purple-400"><span class="font-bold">Carregar Foto da Empresa</span> ou arraste e solte</p>
+                                        <p class="text-xs text-purple-500 dark:text-purple-400">PNG, JPG or GIF (MÁX. 2mb)</p>
+                                    </div>
+                                    <input id="id_photo" type="file" name='photo' class="hidden" />
+                                </label>
+                            </div>                                         
                         {% else %}
                             <input 
                                 id="{{ field.id_for_label }}" 
                                 name="{{ field.name }}" 
                                 value="{% if field.value is not None %}{{ field.value }}{% endif %}"  
                                 type="{{ field.field.widget.input_type }}" 
+                                {% comment %} type="{% if field.name == 'birthdate' %} hidden {% else %}{{ field.field.widget.input_type }}{% endif %}"  {% endcomment %}
                                 placeholder="{{ field.field.widget.attrs.placeholder }}" 
                                 {{ field.field.widget.attrs.disabled }} 
                                 {% if field.name != 'complement' %}required{% endif %} 
@@ -38,7 +72,7 @@
                         {% endif %}
                     </div>
                 {% endfor %}  
-                {% if 'address' not in request.path %}
+                {% comment %} {% if 'address' not in request.path %}
                     <div>                        
                         <label for="owner_name" class="mb-2 text-sm font-medium text-gray-900 dark:text-white">Representante</label>
                         <input id="id_owner_name" name="owner_name" type="text" disabled
@@ -46,7 +80,7 @@
                             class="rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:inline-none focus:ring-purple-900 focus:bg-purple-50 focus:z-10 sm:text-sm" />
 
                     </div>                
-                {% endif %}
+                {% endif %} {% endcomment %}
             </div>
         </div>
     </div>

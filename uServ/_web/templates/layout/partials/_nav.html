@@ -10,7 +10,7 @@
             <div class="flex items-center lg:order-2">
                 
                 {% if request.user.is_authenticated %}
-                    <div class="hidden mt-2 mr-4 sm:inline-block">
+                    <div class="hidden  mr-4 sm:inline-block">
                         <a class="uppercase font-semibold" 
                         href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:logout' %}{% else %}{% url 'logout' %}{% endif %}" 
                         data-size="large" 
@@ -19,20 +19,18 @@
                         aria-label="Star themesberg/landwind on GitHub">Sair</a>
                     </div>
                 {% else %}
-                    <div class="hidden mt-2 mr-4 sm:inline-block">
-                        <a class="uppercase font-semibold" 
+                    <div class="hidden  mr-4 sm:inline-block">
+                        <a class="bg-transparent hover:bg-purple-500 text-purple-700 font-semibold hover:text-white py-2 px-4 border border-purple-500 hover:border-transparent rounded font-semibold" 
                         href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:login' %}{% else %}{% url 'login' %}{% endif %}" 
                         data-size="large" 
                         data-icon="octicon-star"
                         data-show-count="true"
                         aria-label="Star themesberg/landwind on GitHub">Entrar</a>
-                    </div>
                     
-                    <a href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:register' %}{% else %}{% url 'register' %}{% endif %}" 
-                        class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 
-                        font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 
-                        sm:mr-2 lg:mr-0 dark:bg-purple-600 dark:hover:bg-purple-700 
-                        focus:outline-none dark:focus:ring-purple-800">Cadastrar Agora</a>
+                    
+                        <a href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:register' %}{% else %}{% url 'register' %}{% endif %}" 
+                        class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 border border-purple-700 rounded">Cadastrar Agora</a>
+                    </div>
                 {% endif %}
                 <button data-collapse-toggle="mobile-menu-2" type="button" class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
                     <span class="sr-only">Abrir Menu</span>
@@ -61,7 +59,7 @@
                                     dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white 
                                     lg:dark:hover:bg-transparent dark:border-gray-700">Planos</a>
                         </li>     
-                        {% if request.user.is_authenticated and 'supplier' in request.path %}
+                        {% if request.user.is_authenticated and request.user.is_supplier %}
                             <li>
                                 <a href="{% url "panel:home" request.user.supplier.id %}" target="_blank"
                                 class="block py-2 pl-3 pr-4 text-gray-700 border-b border-gray-100

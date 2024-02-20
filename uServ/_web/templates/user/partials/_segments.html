@@ -1,10 +1,21 @@
  <!-- Categories -->
  <section class="bg-white dark:bg-gray-900">
+    <div class="px-4 pb-2 mx-auto lg:gap-8 xl:gap-0 lg:py-4 lg:grid-cols-12 lg:pt-10">
+        <div class="mr-auto place-self-center lg:col-span-12 text-center">
+            <h1 class="mb-[50px] text-4xl font-extrabold leading-none tracking-normal md:text-5xl xl:text-6xl dark:text-white">Segmentos</h1>
+        </div>
+    </div>
     <div class="max-w-screen-xl px-4 pb-8 mx-auto lg:pb-16">
         <div class="grid grid-cols-2 gap-8 text-gray-500 sm:gap-12 sm:grid-cols-3 lg:grid-cols-3 dark:text-gray-400">
             {% for segment in segments %}
                 <div class="text-center bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <img src="{{ media_url }}{{segment.photo}}" alt="{{segment.name}}" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
+                    {% if segment.photo %}
+                        <img src="{{segment.photo.url}}" alt="{{segment.name}}" class="inline-block relative object-cover object-center !rounded-full w-20 h-20 rounded-md">
+                    {% else %}
+                        <div class="text-2xl text-purple-500 px-4 py-2 bg-purple-100 text-center rounded-full">
+                            <i class="fa-solid fa-camera-retro "></i>
+                        </div>
+                    {% endif %}
                     <h3 class="text-xl font-semibold mb-2">{{segment.name}}</h3>
                 </div>            
             {% endfor %}

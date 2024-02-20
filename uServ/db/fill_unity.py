@@ -10,23 +10,14 @@ config = {
     'database': 'db_userv'
 }
 
+
+
 unities=[
-    'Unidade',
-    'M²',
-    'M',
-    'Kg',
-    'Hora',
-    'M³',
-    'Móvel',
-    'Portas',
-    'Km',
-    'Mão',
-    'Pé',
-    'Corte',
-    'Barba',
-    'Corte e Barba',
-    'Consulta',
-    'Exame'
+    'Minutos',
+    'Horas',
+    'Dias',
+    'Semanas',
+    'Meses',
 ]
 # Conectar ao banco de dados
 conn = mysql.connector.connect(**config)
@@ -37,7 +28,7 @@ try:
         
     # Inserir dados 
     for p in unities:        
-        cursor.execute(f'INSERT INTO db_userv.unity (unit) VALUES ("{p}")')
+        cursor.execute(f'INSERT INTO db_userv.unit_of_execution (name, active) VALUES ("{p}", True)')
 
     # Commitar as alterações
     conn.commit()

@@ -1,0 +1,118 @@
+{% extends "layout/base-panel.html" %}
+{% load widget_tweaks %}
+{% load filter_tags %}
+
+
+{% block title %}Equipes{% endblock title %}
+
+
+{% block content %}
+    <section class="max-w-4xl p-6 mx-auto bg-purple-50 rounded-md shadow-md dark:bg-purple-800 mt-5">
+        <a href="{% url "panel:fetch_teams" request.user.supplier.id %}" class="text-purple-500 text-2xl">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </a>          
+        <h1 class="text-2xl text-center font-bold text-purple-700 capitalize dark:text-purple-100">Cadastro de Equipes</h1>
+        {% if form.errors %}
+            {% for error in form.errors %}
+            <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                <p class="font-bold">Nem tudo é o que parece....</p>
+                <p>{{error.sender}}</p>
+            </div>            
+            {% endfor %}
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-1">
+                <div>
+                    <label for="segment" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700 "> Equipe </span>
+                        {{ form.name|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div>   
+                <div>
+                    <label for="segment" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <span class="text-xs font-medium text-gray-700 "> Descrição </span>
+                        {{ form.description|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none"}}
+                    </label>                    
+                </div>                            
+                <div>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="id_photo" class="flex flex-col items-center justify-center w-full h-30 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-zinc-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-purple-50 hover:border-purple-700 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                {% if form.photo.value != None %}
+                                    <img id="imagem-preview" src="{{form.photo.value.url}}" class="w-10 h-10" alt="">
+                                    {% with form.photo.value|split:"/" as ps %}
+                                        {% for p in ps %}
+                                            {% if '.' in p %}
+                                                <span id='name-image' class="text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal">{{p}}</span></span>    
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% else %}   
+                                    <div id="image-icon">
+                                        <svg class="w-8 h-8 mb-4 text-purple-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                        </svg> 
+                                    </div>                                 
+                                    <span id='name-image' class="hidden text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal"></span></span>
+                                {% endif %}
+                                
+                                <p class="mb-2 text-sm text-purple-500 dark:text-purple-400"><span class="font-bold">Carregar Imagem</span> ou arraste e solte</p>
+                                <p class="text-xs text-purple-500 dark:text-purple-400">PNG, JPG or GIF (MÁX. 2mb)</p>
+                            </div>
+                            <input id="id_photo" type="file" name='photo' class="hidden" />
+                        </label>
+                    </div> 
+                </div>
+                <div class="flex gap-5 bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
+                    <span class="text-xs font-medium text-gray-700">Ativar Equipe? </span>{{form.active|append_attr:"class: text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} Sim
+                </div>
+            </div>
+            <div class="flex justify-center mt-6 gap-5">
+                
+                <a href="{% url "panel:fetch_teams" request.user.supplier.id %}" 
+                    class="px-4 py-2 leading-5 text-purple-500 transition-colors duration-200 transform bg-transparent border border-purple-700 rounded-md hover:bg-purple-500 hover:text-gray-50 focus:outline-none focus:bg-gray-600">
+                    Cancelar
+                </a> 
+                <div>
+                    <button type="submit" class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-purple-500 rounded-md hover:bg-purple-700 focus:outline-none focus:bg-gray-600">Salvar</button>
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+{% endblock content %}
+
+{% block javascript %}
+    <script>
+        $(document).ready(function() {
+            $('#id_photo').on('change', function(event) {
+                var input = event.target;
+                var imagemPreview = $('<img id="image-preview" class="rounded-full">');
+                var divImagePreview = $('#image-icon');
+                var arquivo = input.files[0];
+
+                if (arquivo) {
+                    var leitor = new FileReader();
+                    leitor.onload = function() {
+                        aux = $('#id_photo').val().split("\\");
+                        name_preview = aux[aux.length - 1];
+                        $('#name-image-preview').text(name_preview);
+                        $('#name-image').show();
+
+                        imagemPreview.attr('src', leitor.result);
+                        imagemPreview.css('display', 'block');
+                        imagemPreview.css('width', '48px');
+                        imagemPreview.css('height', '48px');
+                        divImagePreview.html(imagemPreview);
+                    };
+                    leitor.readAsDataURL(arquivo);
+                } else {
+                    imagemPreview.attr('src', '#');
+                    imagemPreview.css('display', 'none');
+                }
+            });
+        });
+    </script>
+{% endblock javascript %}
