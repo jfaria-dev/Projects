@@ -47,7 +47,16 @@
                     <div class="flex items-center justify-center w-full">
                         <label for="id_photo" class="flex flex-col items-center justify-center w-full h-30 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-zinc-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-purple-50 hover:border-purple-700 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <img id="imagem-preview" src="{{form.photo.value.url}}" class="w-12 h-12 rounded-full" alt="">
+                                {% if form.photo.value %}
+                                    <img id="imagem-preview" src="{{form.photo.value.url}}" class="w-12 h-12 rounded-full" alt="">
+                                {% else %}   
+                                    <div id="image-icon">
+                                        <svg class="w-8 h-8 mb-4 text-purple-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                        </svg> 
+                                    </div>                                 
+                                    <span id='name-image' class="hidden text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal"></span></span>
+                                {% endif %}
                                 {% with form.photo.value|split:"/" as ps %}
                                     {% for p in ps %}
                                         {% if '.' in p %}
@@ -82,17 +91,28 @@
 {% block javascript %}
     <script>
         $(document).ready(function() {
-            $('#id_photo').on('change', function(event) {
+            $('input[name="photo"]').on('change', function(event) {
                 var input = event.target;
-                var imagemPreview = $('#imagem-preview');
+                console.log(input);
+                var imagemPreview = $('#imagem-preview');                
+                console.log(imagemPreview);
                 var arquivo = input.files[0];
 
                 if (arquivo) {
                     var leitor = new FileReader();
                     leitor.onload = function() {
+                        if (imagemPreview.length == 0) {
+                            div_image = $('#image-icon');
+                            imagemPreview = $('<img id="imagem-preview" class="w-12 h-12 rounded-full" alt="">');
+                            div_image.find('svg').addClass('hidden');
+                            div_image.append(imagemPreview);
+                        }
+
                         aux = $('#id_photo').val().split("\\");
-                        name_preview = aux[aux.length - 1];
+                        name_preview = aux[aux.length - 1];     
                         $('#name-image-preview').text(name_preview);
+                        $('#name-image').show();
+                        
                         imagemPreview.attr('src', leitor.result);
                         imagemPreview.css('display', 'block');
                     };
@@ -102,6 +122,7 @@
                     imagemPreview.css('display', 'none');
                 }
             });
+            
         });
     </script>
 {% endblock javascript %}

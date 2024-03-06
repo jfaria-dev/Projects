@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import auth
-from ...models import User, UserAuth
-from ...models import Supplier, SupplierDetails
+
+from _auth.models import UserAuth
+from _web.models import User, Supplier, SupplierDetails
 from _panel.models import Service, GeneralService, Category
 
 # --------------- PRIVATE FUNCTIONS --------------- 

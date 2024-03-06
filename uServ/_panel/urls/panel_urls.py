@@ -9,6 +9,8 @@ from ..views.team import team_views, worker_views
 # PANEL VIEW URLS
 panel_urls = [
     path('<int:supplier_id>', panel_views.home , name='home'),
+    path('<int:supplier_id>/availability', panel_views.availability, name='availability'),
+    # path('<int:supplier_id>/availability/<int:id_available_time>', panel_views.edit_availability, name='edit_availability'),
 ]
 
 # SERVICE URLS
@@ -39,7 +41,11 @@ panel_urls += [
 panel_urls += [
     path('v1/ajax/fetch_categories', service_views.fetch_categories , name='fetch_categories'),
     path('v1/ajax/fetch_general_services', service_views.fetch_general_services , name='fetch_general_services'),
-    path('v1/ajax/fetch_units_for_service', service_views.fetch_units_for_service , name='fetch_units_for_service')
+    path('v1/ajax/fetch_units_for_service', service_views.fetch_units_for_service , name='fetch_units_for_service'),
+    path('v1/ajax/fetch_workers_by_team', service_views.fetch_workers_by_team , name='fetch_workers_by_team'),
+    path('v1/ajax/add_availability', panel_views.add_availability , name='add_availability'),
+    path('v1/ajax/delete_availability', panel_views.delete_availability , name='delete_availability'),
+    
 ]
 
 # IMAGES URLS

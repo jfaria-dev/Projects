@@ -9,6 +9,9 @@ class Worker(models.Model):
     def get_ById(id):
         return Worker.objects.filter(id=id).first()
     
+    def get_available_dates(self):
+        return self.orders.filter(date__month=datetime.now().month)
+    
     def worker_image_path(instance, filename):
     # Cria um caminho baseado no ID do fornecedor e no nome do arquivo
         url = f"supplier/{instance.team.supplier.id}/team/{instance.team.id}/workers/{filename}"
@@ -72,8 +75,8 @@ class Worker(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name + ' ' + self.surname
-
+        return self.name 
+    
     class Meta:
         app_label = '_panel'
         db_table = 'worker'

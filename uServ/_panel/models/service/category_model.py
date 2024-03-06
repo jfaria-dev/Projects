@@ -22,15 +22,16 @@ class Category(models.Model):
     # METHODS
     def __str__(self) -> str:
         return self.name
-    
+        
     def get_Segments():
-        return Category.objects.filter(parent__isnull=True)
+        return Category.objects.filter(parent__isnull=True, active=True)
     
     def get_ById(id):
         print(id)
         return Category.objects.filter(pk=id).first()
     
-
+    def get_Children(id):
+        return Category.objects.filter(parent=id, active=True)
 
 class CategoryAdmin(admin.ModelAdmin):
     list_filter = [("parent", admin.AllValuesFieldListFilter)]

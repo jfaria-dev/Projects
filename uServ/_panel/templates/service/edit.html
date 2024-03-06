@@ -10,7 +10,7 @@
 
 
 {% block content %}
-    <section class="max-w-4xl p-6 mx-auto bg-purple-50 rounded-md shadow-md dark:bg-gray-800 mt-5">
+    <section class="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 mt-5">
         <a href="{% url "panel:fetch_services" request.user.supplier.id %}" class="text-purple-500 text-2xl">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </a>   
@@ -27,16 +27,16 @@
             {% csrf_token %}
             <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-1">
                 {% if not form.active.value %}
-                    <div class="flex gap-5 bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
-                        <span class="text-xs font-medium text-gray-700">Publicar Serviço? </span>{{form.active|append_attr:"class: text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} Sim
+                    <div class="flex gap-5 bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
+                        <span class="text-xs font-medium text-gray-700">Publicar Serviço? </span>{{form.active|append_attr:"class: text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} Sim
                     </div>
                 {% else %}
-                    {{form.active|append_attr:"class: hidden text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }}
+                    {{form.active|append_attr:"class: hidden text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }}
                 {% endif %}                
-                <label for="category" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                <label for="category" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                     <span class="text-xs font-medium text-gray-700"> Categoria </span>                  
-                    <select name="category" id="id_category" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" 
-                        hx-get="{% url "panel:fetch_general_services" %}" hx-target="#id_service" required>
+                    <select name="category" id="id_category" class="block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" 
+                        required>
                         <option value="" selected>---------</option>
                         {% for cat in categories %}
                             <option value="{{cat.id}}" {% if category == cat.id %} selected {% endif %}>{{cat.name}}</option>
@@ -45,87 +45,99 @@
                 </label>                 
                 
                 <div id='id_service'>
-                    <label for="segment" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                    <label for="segment" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                         <span class="text-xs font-medium"> Serviços </span>   
-                        {{form.general_service|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        {{form.general_service|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                     </label>
                 </div>                 
 
                 <div class='grid grid-flow-col justify-stretch gap-4'>
                     <div class=''>
-                        <label for="price" class="block overflow-hidden bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <label for="price" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                             <span class="text-xs font-medium"> Preço</span>  
                             <label class="relative text-gray-500 focus-within:text-gray-600 block" for="id_price">
                                 <span class="pointer-events-none absolute top-1/2 transform -translate-y-1/2 ">R$</span>                                
-                                {{form.price|append_attr:"class: [&::-webkit-inner-spin-button]:appearance-none ml-2 block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                                {{form.price|append_attr:"class: [&::-webkit-inner-spin-button]:appearance-none ml-2 block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                             </label>                      
                         </label>
                     </div>
                     <div>
-                        <label for="unit_for_service" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <label for="unit_for_service" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                             <span class="text-xs font-medium text-gray-700"> Unidade </span>                        
-                            {{form.unit_for_service|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                            {{form.unit_for_service|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                         </label>
                     </div>
                     <div>
-                        <label for="execution_time" class="block overflow-hidden bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <label for="execution_time" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                             <span class="text-xs font-medium text-gray-700"> Tempo de Execução </span>                        
-                            {{form.execution_time|append_attr:"class: [&::-webkit-inner-spin-button]:appearance-none block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                            {{form.execution_time|append_attr:"class: [&::-webkit-inner-spin-button]:appearance-none block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                         </label>
                     </div>
                     <div>
-                        <label for="unit_of_execution" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                        <label for="unit_of_execution" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                             <span class="text-xs font-medium text-gray-700"> Tempo </span>                        
-                            {{form.unit_of_execution|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                            {{form.unit_of_execution|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                         </label>
                     </div>
                 </div>
                 <div>
-                    <label for="execution_time" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                    <label for="execution_time" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                         <span class="text-xs font-medium text-gray-700"> O que precisa para executar </span>                        
-                        {{form.requirements|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        {{form.requirements|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                     </label> 
-                </div>              
-                <div class="flex items-center justify-center w-full">
-                    <label for="id_photo" class="flex flex-col items-center justify-center w-full h-30 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-zinc-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-purple-50 hover:border-purple-700 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            {% if form.service_image.value %}
-                                <img id="imagem-preview" src="{{form.service_image.value.url}}" class="w-12 h-12 rounded-full" alt="">
-                            {% else %}
-                                <div id="image-icon">
-                                    <svg class="w-8 h-8 mb-4 text-purple-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                    </svg> 
-                                </div> 
-                            {% endif %}
-                            {% with form.service_image.value|split:"/" as ps %}
-                                {% for p in ps %}
-                                    {% if '.' in p %}
-                                        <span id='name-image' class="text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal">{{p}}</span></span>    
-                                    {% endif %}
-                                {% endfor %}
-                            {% endwith %}
-                            <p class="mb-2 text-sm text-purple-500 dark:text-purple-400"><span class="font-bold">Carregar Imagem</span> ou arraste e solte</p>
-                            <p class="text-xs text-purple-500 dark:text-purple-400">PNG, JPG or GIF (MÁX. 2mb)</p>
-                        </div>
-                        <input id="id_photo" type="file" name='service_image' class="hidden" />
-                    </label>
+                </div>  
+                <div>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="id_photo" class="flex flex-col items-center justify-center w-full h-30 border-2 border-purple-300 border-dashed rounded-lg cursor-pointer bg-zinc-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-purple-50 hover:border-purple-700 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                {% if form.service_image.value %}
+                                    <img id="imagem-preview" src="{{form.service_image.value.url}}" class="w-10 h-10 rounded-full" alt="">
+                                    {% with form.service_image.value|split:"/" as ps %}
+                                        {% for p in ps %}
+                                            {% if '.' in p %}
+                                                <span id='name-image' class="text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal">{{p}}</span></span>    
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% else %}   
+                                    <div id="image-icon">
+                                        <svg class="w-8 h-8 mb-4 text-purple-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                        </svg> 
+                                    </div>                                 
+                                    <span id='name-image' class="hidden text-sm text-gray-500 dark:text-gray-400 font-semibold">Arquivo: <span id="name-image-preview" class="font-normal"></span></span>
+                                {% endif %}
+                                
+                                <p class="mb-2 text-sm text-purple-500 dark:text-purple-400"><span class="font-bold">Carregar Imagem</span> ou arraste e solte</p>
+                                <p class="text-xs text-purple-500 dark:text-purple-400">PNG, JPG or GIF (MÁX. 2mb)</p>
+                            </div>
+                            <input id="id_photo" type="file" name='service_image' class="hidden" />
+                        </label>
+                    </div> 
                 </div> 
+                {% if request.user.supplier.has_active_teams %}                    
+                    <div>
+                        <label for="team" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                            <span class="text-xs font-medium"> Equipe </span>   
+                            {{form.team|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        </label>
+                    </div> 
+                    <div>
+                        <label for="workers" class="block overflow-hidden bg-purple-100 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                            <span class="text-xs font-medium"> Funcionários </span>   
+                            {{form.workers|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-purple-100  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        </label>
+                    </div> 
+                {% endif %}
             </div>
-            {% if request.user.supplier.teams.all %}
-                <div class="flex gap-5 bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
-                    <span class="text-xs font-medium text-gray-700">Permitir Seleção de Funcionários? </span>
-                    {{form.worker_available|append_attr:"class: text-gray-700 bg-zinc-50 dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} <span class="text-sm">Sim</span>
-                </div>
-            {% endif %}
             <div class="flex justify-center mt-6 gap-5">
                 
                 <a href="{% url "panel:fetch_services" request.user.supplier.id %}" 
-                    class="px-4 py-2 leading-5 text-purple-500 transition-colors duration-200 transform bg-transparent border border-purple-700 rounded-md hover:bg-purple-500 hover:text-gray-50 focus:outline-none focus:bg-gray-600">
+                    class="px-4 py-2 leading-5 text-purple-500 transition-colors duration-200 transform bg-transparent border border-purple-700 rounded-md hover:bg-purple-1000 hover:text-gray-50 focus:outline-none focus:bg-purple-600">
                     Cancelar
                 </a> 
                 <div>
-                    <button type="submit" class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-purple-500 rounded-md hover:bg-purple-700 focus:outline-none focus:bg-gray-600">Salvar</button>
+                    <button type="submit" class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-purple-400 rounded-md hover:bg-purple-700 focus:outline-none focus:bg-purple-600">Salvar</button>
                 </div>
 
             </div>
@@ -136,25 +148,94 @@
 {% block javascript %}
     <script src="{% static 'js/jquery.mask.min.js' %}"></script>
     <script>
-        $(document).ready(function(){
-            $('#id_photo').on('change', function(event) {
-                var input = event.target;
-                var imagemPreview = $('#imagem-preview');
-                var arquivo = input.files[0];
+        $(document).ready(function() {
+            $('select[name="category"]').focus();
+            $('input[name="price"]').mask("#.##0,00", {reverse: true});
+        });
 
-                if (arquivo) {
-                    var leitor = new FileReader();
-                    leitor.onload = function() {
-                        aux = $('#id_photo').val().split("\\");
-                        name_preview = aux[aux.length - 1];
-                        $('#name-image-preview').text(name_preview);
-                        imagemPreview.attr('src', leitor.result);
-                        imagemPreview.css('display', 'block');
-                    };
-                    leitor.readAsDataURL(arquivo);
-                } else {
-                    imagemPreview.attr('src', '#');
-                    imagemPreview.css('display', 'none');
+        $('input[name="service_image"]').on('change', function(event) {
+            var input = event.target;
+            console.log(input);
+            var imagemPreview = $('#imagem-preview');                
+            console.log(imagemPreview);
+            var arquivo = input.files[0];
+
+            if (arquivo) {
+                var leitor = new FileReader();
+                leitor.onload = function() {
+                    if (imagemPreview.length == 0) {
+                        div_image = $('#image-icon');
+                        imagemPreview = $('<img id="imagem-preview" class="w-12 h-12 rounded-full" alt="">');
+                        div_image.find('svg').addClass('hidden');
+                        div_image.append(imagemPreview);
+                    }
+
+                    aux = $('#id_photo').val().split("\\");
+                    name_preview = aux[aux.length - 1];     
+                    $('#name-image-preview').text(name_preview);
+                    $('#name-image').show();
+                    
+                    imagemPreview.attr('src', leitor.result);
+                    imagemPreview.css('display', 'block');
+                };
+                leitor.readAsDataURL(arquivo);
+            } else {
+                imagemPreview.attr('src', '#');
+                imagemPreview.css('display', 'none');
+            }
+        });
+
+        // Fetch General Services
+        $('[name="category"]').on('change', function() {
+            var category = $(this).val();
+            var url = "{% url 'panel:fetch_general_services' %}";
+            var target = $('[name="general_service"]');
+            var data = {
+                'category': category
+            };
+            $.ajax({
+                url: url,
+                data: data,
+                method: 'GET',
+                success: function(response) {
+                    target.attr('disabled', false);
+                    target.html(response);
+                }
+            });
+        });
+
+        // Fetch Units for Service
+        $("#id_general_service").on('change', function () {  
+            var general_service_id = $(this).val();
+            var url = "{% url 'panel:fetch_units_for_service' %}";
+            var target = $('[name="unit_for_service"]');
+            var data = {
+                'general_service_id': general_service_id
+            };
+            $.ajax({
+                url: url,
+                data: data,
+                method: 'GET',
+                success: function(response) {
+                    target.attr('disabled', false);
+                    target.html(response);
+                }
+            });
+        });
+
+        $('select[name="team"]').on('change', function() {
+            var team_id = $(this).val();
+            var url = "{% url 'panel:fetch_workers_by_team' %}";
+            var target = $('[name="workers"]');
+            var data = {
+                'team_id': team_id
+            };
+            $.ajax({
+                url: url,
+                data: data,
+                method: 'GET',
+                success: function(response) {
+                    target.html(response);
                 }
             });
         });

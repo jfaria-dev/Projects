@@ -2,7 +2,7 @@ import re
 from typing import Any
 from django.db import models
 from ..common.util import convert_date_string_to_datetime
-from .order_model import SupplierOrder
+from .supplier_order_model import SupplierOrder
 from django.forms import ValidationError
 
 from datetime import datetime

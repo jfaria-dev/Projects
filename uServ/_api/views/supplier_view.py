@@ -1,10 +1,11 @@
 from _web.models import Supplier
-from ..serializers.supplier_serializer import SupplierSerializer
+from _api.serializers import SupplierSerializer
 
-from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
-class SupplierListAPIView(generics.ListAPIView):
-    queryset = Supplier.objects.filter(active=True)
-    serializer_class = SupplierSerializer
-    
-supplier_list_view = SupplierListAPIView.as_view()
+@api_view(['GET'])
+def getSupplierById(request, supplier_id):
+    supplier = Supplier.get_ById(supplier_id)
+    serializer = SupplierSerializer(supplier)
+    return Response(serializer.data)

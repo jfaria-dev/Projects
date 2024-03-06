@@ -4,14 +4,48 @@
     <nav class="bg-white border-gray-200 py-2.5 dark:bg-gray-900">
         <div class="flex flex-wrap items-center justify-between max-w-screen-xl px-4 mx-auto">
             <a href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:home' %}{% else %}{% url "home" %}{% endif %}" class="flex items-center">
-                <img src="{% static "images/logo.svg" %}" class="h-6 mr-3 sm:h-9" alt="Landwind Logo" />
+                <img src="{% static 'images/logo.svg' %}" class="h-6 mr-3 sm:h-9" alt="Landwind Logo" />
                 <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">uServ</span>
             </a>
             <div class="flex items-center lg:order-2">
                 
                 {% if request.user.is_authenticated %}
+                    {% if request.user.is_client %}
+                        <div class="relative inline-block text-left mr-10">
+                            <div>
+                                <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-purple-900 shadow-sm ring-1 ring-inset ring-purple-300 hover:bg-purple-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                                    {{request.user.user_client.name}}
+                                    <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {% if request.session.schedule_cart %}
+                                <div class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                    {% for schedule in request.session.schedule_cart.items %}
+                                        <div class="py-1" role="none">
+                                            <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+                                            <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">{{schedule.service.general_service}}</a>
+                                            <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">Duplicate</a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="hidden  mr-4 sm:inline-block">
+                            <a class="font-semibold" 
+                            href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:logout' %}{% else %}{% url 'logout' %}{% endif %}" 
+                            data-size="large" 
+                            data-icon="octicon-star"
+                            data-show-count="true"
+                            aria-label="Star themesberg/landwind on GitHub">{{request.user.supplier.name}}</a>
+                        </div>                    
+                    {% endif %}
+
                     <div class="hidden  mr-4 sm:inline-block">
-                        <a class="uppercase font-semibold" 
+                        <a class="font-semibold" 
                         href="{% if request.resolver_match.namespace == 'supplier' %}{% url 'supplier:logout' %}{% else %}{% url 'logout' %}{% endif %}" 
                         data-size="large" 
                         data-icon="octicon-star"
@@ -73,3 +107,10 @@
         </div>
     </nav>
 </header>
+
+{% block javascript %}
+    <script>
+        
+    </script>
+
+{% endblock javascript %}

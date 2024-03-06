@@ -35,7 +35,7 @@
                         required>
                         <option value="">---------</option>
                         {% for cat in categories %}
-                            <option value="{{cat.id}}" {% if category_selected == cat.id %} selected {% endif %}>{{cat.name}}</option>
+                            <option value="{{cat.id}}" {% if category == cat.id %} selected {% endif %}>{{cat.name}}</option>
                         {% endfor %}
                     </select>    
                 </label>  
@@ -43,7 +43,7 @@
                 <div id='id_service'>
                     <label for="segment" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
                         <span class="text-xs font-medium"> Serviços </span>   
-                        {{form.general_service|attr:"disabled"|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        {{form.general_service|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
                     </label>
                 </div>               
 
@@ -111,20 +111,26 @@
                         </label>
                     </div> 
                 </div>
-                <div class='grid grid-flow-col justify-stretch gap-4'>
-                    <div class="flex gap-5 bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
-                        <span class="text-xs font-medium text-gray-700">Publicar Serviço? </span>
-                        {{form.active|append_attr:"class: text-gray-700 bg-zinc-50 dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} <span class="text-sm">Sim</span>
-                    </div>
-                    {% if request.user.supplier.teams.all %}
-                        <div class="flex gap-5 bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
-                            <span class="text-xs font-medium text-gray-700">Publicar Serviço? </span>
-                            {{form.worker_available|append_attr:"class: text-gray-700 bg-zinc-50 dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} <span class="text-sm">Sim</span>
-                        </div>
-                    {% endif %}
-                </div>
+                <div class="flex gap-5 bg-zinc-50 rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 ">
+                    <span class="text-xs font-medium text-gray-700">Publicar Serviço? </span>
+                    {{form.active|append_attr:"class: text-gray-700 bg-zinc-50 dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} <span class="text-sm">Sim</span>
+                </div> 
+                {% if request.user.supplier.has_active_teams %}                    
+                    <div>
+                        <label for="team" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                            <span class="text-xs font-medium"> Equipe </span>   
+                            {{form.team|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        </label>
+                    </div> 
+                    <div>
+                        <label for="workers" class="block overflow-hidden bg-zinc-50 rounded-md border border-purple-200 px-3 py-2 shadow-sm focus-within:border-purple-600 focus-within:ring-1 focus-within:ring-purple-600">
+                            <span class="text-xs font-medium"> Funcionários </span>   
+                            {{form.workers|append_attr:"class: block w-full px-4 py-2 mt-1 text-gray-700 bg-zinc-50  dark:bg-gray-800 dark:text-gray-300 focus:outline-none" }} 
+                        </label>
+                    </div> 
+                {% endif %}
             </div>
-           
+             
             <div class="flex justify-center mt-6 gap-5">
                 
                 <a href="{% url "panel:fetch_services" request.user.supplier.id %}" 
@@ -175,6 +181,7 @@
             }
         });
 
+        // Fetch General Services
         $('[name="category"]').on('change', function() {
             var category = $(this).val();
             var url = "{% url 'panel:fetch_general_services' %}";
@@ -193,7 +200,7 @@
             });
         });
             
-
+        // Fetch Units for Service
         $("#id_general_service").on('change', function () {  
             var general_service_id = $(this).val();
             var url = "{% url 'panel:fetch_units_for_service' %}";
@@ -207,6 +214,23 @@
                 method: 'GET',
                 success: function(response) {
                     target.attr('disabled', false);
+                    target.html(response);
+                }
+            });
+        });
+
+        $('select[name="team"]').on('change', function() {
+            var team_id = $(this).val();
+            var url = "{% url 'panel:fetch_workers_by_team' %}";
+            var target = $('[name="workers"]');
+            var data = {
+                'team_id': team_id
+            };
+            $.ajax({
+                url: url,
+                data: data,
+                method: 'GET',
+                success: function(response) {
                     target.html(response);
                 }
             });

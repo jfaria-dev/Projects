@@ -21,3 +21,6 @@ class GeneralService(models.Model):
             services.extend(general_service.services.filter(supplier__address__city__icontains=city))
             # services.extend(general_service.services.all())
         return services	
+    
+    def get_ByCategoryId(category_id):
+        return GeneralService.objects.filter(category_id=category_id)

@@ -1,5 +1,4 @@
 from django.db import models
-from _web.models import Supplier
 
 class Team(models.Model):
     # METHODS
@@ -23,3 +22,6 @@ class Team(models.Model):
     class Meta:
         app_label = '_panel'
         db_table = 'team'
+        
+    def __str__(self):
+        return self.name

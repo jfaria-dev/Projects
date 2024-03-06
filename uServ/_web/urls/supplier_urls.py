@@ -9,7 +9,6 @@ supplier_urls = [
     path('login', supplier_views.login_supplier, name='login'),
     path('logout', supplier_views.logout_supplier, name='logout'),
     path('register', supplier_views.register, name='register'),
-    path('<int:supplier_id>', supplier_views.supplier, name='supplier'),
     path('register/<int:supplier_id>/details', supplier_views.company_details, name='company_details'),
     path('register/<int:supplier_id>/address', supplier_views.company_address, name='company_address'),
     path('register/<int:supplier_id>/plan', supplier_views.sign_plan, name='sign_plan'),

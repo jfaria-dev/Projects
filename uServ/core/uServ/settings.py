@@ -20,7 +20,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    # 'admin_material.apps.AdminMaterialDashboardConfig',   # <-- NEW
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     '_api',
+    '_auth',
     '_web',
     '_panel',
     '_utils',
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
 ]
 
 # CUSTOM USER
-AUTH_USER_MODEL = '_web.UserAuth'
+AUTH_USER_MODEL = '_auth.UserAuth'
 
 
 MIDDLEWARE = [
@@ -89,18 +89,27 @@ WSGI_APPLICATION = 'core.uServ.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql.connector.django',
+#         'NAME': 'db_userv',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
         'NAME': 'db_userv',
         'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'PASSWORD': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
+        'HOST': 'monorail.proxy.rlwy.net',
+        'PORT': '28310',
     }
 }
-
-
 
 
 # Password validation

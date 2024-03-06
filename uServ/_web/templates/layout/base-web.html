@@ -46,6 +46,14 @@
         <!-- JS Template -->
         <script src="https://unpkg.com/flowbite@1.4.1/dist/flowbite.js"></script>
         <!-- Extra JS imports -->
+        <script>
+            $('#menu-button').on('click', function(){
+                if ($('div[role="menu"]').hasClass('hidden'))
+                    $('div[role="menu"]').removeClass('hidden');
+                else
+                    $('div[role="menu"]').addClass('hidden');
+            });
+        </script>
         {% block javascript %}{% endblock javascript %}
     </body>
 </html>

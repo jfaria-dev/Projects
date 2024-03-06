@@ -1,13 +1,15 @@
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from _panel.models import AvailableTime
 from django.utils.translation import gettext_lazy as _
 # from ...._panel.models.service.general_service_model import GeneralService
 
+DAYS_OF_WEEK_ORDER = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
 
         
 class Supplier(models.Model): 
-    # FUNCTIONS     
+    # METHODS     
     def get_ById(id):
         return Supplier.objects.filter(id=id).first()
     
@@ -17,15 +19,27 @@ class Supplier(models.Model):
     def get_ByEmail(email):
         return Supplier.objects.filter(email=email).first()
     
+    def has_active_teams(self):
+        # Verificar se o fornecedor possui equipes ativas
+        return self.teams.filter(active=True).exists()
+    
+    def get_availabilities_time(self):
+        horarios_ordenados = sorted(self.available_times.all(), key=lambda x: DAYS_OF_WEEK_ORDER.index(x.day_of_week))
+        return horarios_ordenados
+    
+    def get_availabilities_by_day(self, day_of_week):
+        return self.available_times.filter(day_of_week=day_of_week).first()
+    
     # FIELDS
-    user_auth = models.OneToOneField('_web.UserAuth', on_delete=models.CASCADE, null=True, related_name='supplier')    
+    user_auth = models.OneToOneField('_auth.UserAuth', on_delete=models.CASCADE, null=True, related_name='supplier')    
     owner_name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200, unique=True,)                              
     phone = models.CharField(max_length=15,) # +55 (00) 00000-0000 
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
-    services = models.ManyToManyField('_panel.GeneralService', related_name='suppliers', blank=True, through='_panel.Service')
+    service = models.ManyToManyField('_panel.GeneralService', related_name='suppliers', blank=True, through='_panel.Service')
+    
     
     class Meta:
       app_label = '_web'

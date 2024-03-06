@@ -5,7 +5,8 @@ from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from _utils.decorator import auth_supplier_required
 
-from _web.models import Screen, SupplierOrder, Supplier, UserAuth, SupplierAddress, SupplierDetails, api_get_supplier_information, Plan, PaymentCard
+from _web.models import Screen, SupplierOrder, Supplier,  SupplierAddress, SupplierDetails, api_get_supplier_information, Plan, PaymentCard 
+from _auth.models import UserAuth
 from _panel.models import Category
 
 from _web.forms.supplier import SupplierForm, SupplierAddressForm, SupplierDetailsForm, PaymentForm
@@ -191,7 +192,7 @@ def home(request):
     #         auth.logout(request)
     form = SupplierForm()
     context = {
-        'content_page': _set_screen_content(request),
+        # 'content_page': _set_screen_content(request),
         'form': form
     }    
     return render(request, 'supplier/index.html', context= context)
@@ -336,10 +337,3 @@ def sign_plan(request, supplier_id):
     plans = Plan.getPlans() 
     return render(request, 'supplier/register/sign-plan.html', {'plans': plans, 'form': form, 'step': 3})
 
-def supplier(request, supplier_id):
-    supplier_details = SupplierDetails.get_ById(supplier_id)
-    print(supplier_details.company_name)
-    print(supplier_details.supplier.email)   
-    services = supplier_details.supplier.offered_services.filter(active=True)
-    
-    return render(request, 'supplier/supplier.html', context= { 'supplier_details': supplier_details, 'services': services })

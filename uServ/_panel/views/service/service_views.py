@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from ...models import Category, Service, GeneralService
+from _panel.models import Category, Service, GeneralService, Team, Worker
 from _web.models import Supplier
-from ...forms import ServiceForm
+from _panel.forms import ServiceForm
 from _utils.decorator import auth_supplier_required
 
 # ---------------------- AJAX FUNCTIONS ----------------------
@@ -22,6 +22,11 @@ def fetch_units_for_service(request):
     units = GeneralService.objects.get(id=general_service_id).units_for_service.all()
     return render(request, 'service/partials/_options-units-for-service.html', {'units': units})
 
+def fetch_workers_by_team(request):
+    team_id = request.GET.get('team_id')
+    workers = Worker.objects.filter(team_id=team_id).order_by('name')
+    return render(request, 'team/partials/_options-workers.html', {'workers': workers})
+
 # ---------------------- VIEWS ----------------------
 @auth_supplier_required
 def fetch_services(request, supplier_id):
@@ -31,24 +36,28 @@ def fetch_services(request, supplier_id):
 
 @auth_supplier_required
 def add_service(request, supplier_id):
-    # categories master
     supplier = Supplier.get_ById(supplier_id)
-    form = ServiceForm(request.POST or None, request.FILES or None)
-    print(form)
+    print(supplier.available_times.all().count())
+    if supplier.available_times.all().count() == 0:
+        return redirect('panel:availability', supplier_id=supplier_id)    
+    
+    form = ServiceForm(request.POST or None, request.FILES or None, supplier=supplier)
+    # print(form)
     if form.is_valid():
         form.instance.supplier = supplier
+        # form.instance.team = Team.objects.filter(id=form.cleaned_data.get('team')).first()
         form.active = True
         service = form.save(commit=False)
         service.save()
         return redirect('panel:fetch_services', supplier_id=supplier_id) 
     else:
         segment_id = supplier.details.segment.id
-        category_selected = request.POST.get('category')
+        category = request.POST.get('category')
         categories = Category.objects.filter(parent_id=segment_id)
-        services = GeneralService.objects.filter(category_id=category_selected)
+        services = GeneralService.objects.filter(category_id=category)
         context = {
             'categories': categories,
-            'category_selected': category_selected,
+            'category': category,
             'services': services,
         }
     
@@ -58,16 +67,12 @@ def add_service(request, supplier_id):
 @auth_supplier_required
 def edit_service(request, supplier_id, service_id):
     service = Service.get_ById(service_id)
-    general_service = service.general_service
-    units_for_service = general_service.units_for_service.all()
     if service:
-        form = ServiceForm(request.POST or None, request.FILES or None, instance=service)
+        form = ServiceForm(request.POST or None, request.FILES or None, instance=service, supplier=service.supplier)
         if request.method == 'POST':      
             if form.is_valid():
                 form.save()
-                return redirect('panel:fetch_services', supplier_id=supplier_id) 
-        
-            
+                return redirect('panel:fetch_services', supplier_id=supplier_id)   
             
         category = service.general_service.category.id
         segment = service.general_service.category.parent.id
@@ -75,9 +80,8 @@ def edit_service(request, supplier_id, service_id):
         services = GeneralService.objects.filter(category_id=category)
         context = {
             'categories': categories,
-            'services': services,
-            'master_category': segment,
             'category': category,
+            'services': services,
             'form': form,
         }
         return render(request, 'service/edit.html', context=context)
@@ -90,3 +94,4 @@ def delete_service(request, supplier_id, service_id):
         service.active = False
         service.save()
     return redirect('panel:fetch_services', supplier_id=supplier_id)
+

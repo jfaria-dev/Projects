@@ -1,10 +1,23 @@
 from _panel.models import Category
-from ..serializers.category_serializer import CategorySerializer
+from _api.serializers import SegmentSerializer, CategoriesSerializer, AllCategorySerializer
 
-from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
-class CategoryListAPIView(generics.ListAPIView):
-    queryset = Category.objects.filter(parent__isnull=True)  # Filter for root categories
-    serializer_class = CategorySerializer
-    
-category_list_view = CategoryListAPIView.as_view()
+@api_view(['GET'])
+def getStructureService(request):
+    structure = Category.get_Segments()
+    serializer = AllCategorySerializer(structure, many=True)    
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def getSegments(request):
+    segments = Category.get_Segments()
+    serializer = SegmentSerializer(segments, many=True)    
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def getCategories(request, segment_id):
+    categories = Category.get_Children(segment_id)
+    serializer = CategoriesSerializer(categories, many=True)    
+    return Response(serializer.data)
