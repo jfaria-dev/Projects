@@ -1,0 +1,9 @@
+<div class="md:py-8 py-2 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
+    {% for time in times %}    
+        <div class="time cursor-pointer hover:text-gray-100" data-time="{{ time }}">
+            <div class="border-b pb-4 border-gray-400 border-dashed hover:bg-purple-200  hover:font-semibold ">
+                <p class="text-xs p-5 font-light leading-3 text-gray-500 dark:text-gray-300">{{ time }}</p>                
+            </div>
+        </div>    
+    {% endfor %}
+</div>

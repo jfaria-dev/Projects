@@ -4,15 +4,16 @@ from mysql.connector import Error
 
 # Configurações do banco de dados
 config = {
-    'host': 'localhost',
+    'host': 'monorail.proxy.rlwy.net',
     'user': 'root',
-    'password': 'root',
-    'database': 'db_userv'
+    'password': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
+    'database': 'db_userv',
+    'port': '28310'
 }
 conn = mysql.connector.connect(**config)
 
 # Carregar a planilha
-caminho_da_planilha = r'C:\Users\jacks\My Drive\uServ\PLANEJAMENTOS\Servicos.xlsx'
+caminho_da_planilha = r'D:\Documentos\Projects\uServ\db\Servicos.xlsx'
 # Se sua planilha estiver em formato CSV, você pode usar caminho_da_planilha = 'caminho/para/sua/planilha.csv'
 dataframe = pd.read_excel(caminho_da_planilha, sheet_name="Planilha4")
 

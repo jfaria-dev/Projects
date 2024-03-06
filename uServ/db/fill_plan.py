@@ -1,25 +1,29 @@
 
 import mysql.connector
 from mysql.connector import Error
+from datetime import datetime
 
 # Configurações do banco de dados
 config = {
-    'host': 'localhost',
+    'host': 'monorail.proxy.rlwy.net',
     'user': 'root',
-    'password': 'root',
-    'database': 'db_userv'
+    'password': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
+    'database': 'db_userv',
+    'port': '28310'
 }
 
 plans=[
         {
             'name':'Basico',
             'description':'loremipsong', 
-            'price': 1 
+            'price': 1 ,
+            'created_at': datetime.now()
         },
        {
             'name': 'Premium',
             'description': 'loremipsong',
-            'price': 2  
+            'price': 2  ,
+            'created_at': datetime.now()
        }]
 # Conectar ao banco de dados
 conn = mysql.connector.connect(**config)
@@ -30,7 +34,7 @@ try:
         
     # Inserir dados 
     for p in plans:        
-        cursor.execute(f'INSERT INTO db_userv.plan (name, description, price, active) VALUES ("{p['name']}", "{p['description']}", {p['price']}, True)')
+        cursor.execute(f'INSERT INTO db_userv.plan (name, description, price, duration, created_at, is_active) VALUES ("{p['name']}", "{p['description']}", {p['price']}, 12, "{p['created_at']}", True)')
 
     # Commitar as alterações
     conn.commit()

@@ -1,0 +1,169 @@
+{% extends "layout/base-panel.html" %}
+{% load widget_tweaks %}
+{% load filter_tags %}
+
+
+{% block title %}Horários{% endblock title %}
+
+
+{% block content %}
+    <section class="max-w-4xl p-6 mx-auto bg-purple-100 rounded-md shadow-md dark:bg-purple-800 mt-5">
+        <a href="{% url "panel:home" request.user.supplier.id %}" class="text-purple-500 text-2xl">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </a>          
+        <h1 class="text-2xl text-center font-bold text-purple-700 capitalize dark:text-purple-100">Disponibilidade Semanal</h1>
+        {% if form.errors %}
+        <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+        <p class="font-bold">Nem tudo é o que parece....</p>
+            {% for error in form.errors %}
+                <p>{{error}}</p>
+                {% endfor %}
+            </div>            
+        {% endif %}
+        <form method="post" name="form_availability" action="{% url "panel:add_availability" %}">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-1">
+                <div class="grid grid-cols-4 gap-4">
+                    <div>Dia da Semana</div>
+                    <div>Abre às:</div>
+                    <div>Fecha às:</div>
+                    <div>Ação:</div>
+                    
+                    <div class="mb-3">
+                        {{ form.day_of_week }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.open_time }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.close_time }}
+                    </div>
+                    <div>
+                        <button name="add_availability" type="submit"
+                        class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-purple-500 rounded-md hover:bg-purple-700 focus:outline-none focus:bg-gray-600">+</button>
+                    </div>
+                </div>                
+            </div>
+            
+        </form>
+    </section>
+    <section class="max-w-4xl p-6 mx-auto bg-purple-100 rounded-md shadow-md dark:bg-purple-800 mt-5">
+        {{supplier.owner_name}}
+        <table class="min-w-full text-left text-md font-light">
+            <thead class="border-b font-medium dark:border-neutral-500">
+                <tr>
+                  <th>Dia da Semana</th>
+                  <th>Horario</th>
+                  <th class="text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for available_time in supplier.get_availabilities_time %}                
+                    {% include "panel/partials/_availability_line.html" %}
+                {% endfor %}
+              </tbody>
+        </table>
+
+    </section>
+
+{% endblock content %}
+
+{% block javascript %}
+    <script>
+        function show_form(){
+            if ($('#id_day_of_week option').length == 0) {
+                $('form').hide();
+            }else{
+                $('form').show();
+            }
+        }
+
+        $(document).ready(function(){
+            show_form();     
+        });
+
+
+
+        $('button[name="add_availability"]').on('click', function(e){
+            e.preventDefault();
+            var DAYS_OF_WEEK_ORDER = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo'];
+            table = $('table tbody');
+            day_of_week = $('#id_day_of_week').val();
+            
+
+
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url "panel:add_availability" %}",
+                data: {
+                    'day_of_week': day_of_week,
+                    'open_time': $('#id_open_time').val(),
+                    'close_time': $('#id_close_time').val(),
+                    'supplier_id': '{{request.user.supplier.id}}',
+                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(response){
+                    rows = $('table tbody tr');
+                    var insertIndex = 0;
+                    rows.each(function(i, row) {
+                        var rowDayOfWeek = $(row).find('td:first').text();
+                        var rowDayOfWeekIndex = DAYS_OF_WEEK_ORDER.indexOf(rowDayOfWeek);
+                        if (rowDayOfWeekIndex > i) {
+                            insertIndex = i;
+                            return false; // Saia do loop se encontrarmos a posição correta
+                        }
+                    });
+                    
+                    if (insertIndex === 0) {
+                        table.prepend(response); // Se o insertIndex for 0, insira na primeira posição
+                    } else {
+                        $(rows[insertIndex]).before(response); // Insira antes da linha encontrada
+                    }
+
+                    $('#id_day_of_week option[value="' + $('#id_day_of_week').val() + '"]').remove();
+
+                    show_form();
+                    
+                },
+                error: function(response){
+                    console.log(response);
+                }
+            });
+        });
+
+        $(document).on('click', '.delete_availability', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            table = $('table tbody');
+            console.log(id);                
+            // if (confirm('Tem certeza de que deseja excluir este horário disponível?')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "panel:delete_availability" %}',
+                    data: {
+                        'supplier_id': '{{request.user.supplier.id}}', 
+                        'available_time_id': id,
+                        'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    success: function(data) {                        
+                        $('table tbody tr[id="row-'+ id + '"]').remove();
+                        $('#id_day_of_week').append($('<option>', {
+                            value: data,
+                            text: data,
+                        }));
+
+                        show_form();
+
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.log('Erro ao excluir o horário disponível:', errorThrown);
+                        // Trate o erro de acordo com os requisitos do seu aplicativo
+                    }
+                });
+            // }
+        });
+    </script>
+{% endblock javascript %}
