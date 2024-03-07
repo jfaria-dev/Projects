@@ -264,7 +264,7 @@ def register(request):
         
     context = {
         'form': form,
-        'content_page': _set_screen_content(request)
+        # 'content_page': _set_screen_content(request)
     }
     return render(request, 'supplier/register/register.html', context=context)
 
