@@ -7,7 +7,8 @@ from rest_framework.decorators import api_view
 @api_view(['GET'])
 def getStructureService(request):
     structure = Category.get_Segments()
-    serializer = AllCategorySerializer(structure, many=True)    
+    serializer = AllCategorySerializer(structure, many=True)   
+    print('entrou') 
     return Response(serializer.data)
 
 @api_view(['GET'])
