@@ -1,1 +1,0 @@
-web gunicorn uServ.wsgi:application --log-file -
