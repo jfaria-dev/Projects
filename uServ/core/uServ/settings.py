@@ -154,14 +154,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Heroku
 STATICFILES_DIRS = [
                     os.path.join(BASE_DIR, '_web/static'),  # Static directory for _web app
                     os.path.join(BASE_DIR, '_panel/static'),  # Static directory for _panel app
     # os.path.join(BASE_DIR, 'other_app/static'),  # Add other app static dirs as needed
                     ]
 
-django_heroku.settings(locals())
+django_heroku.settings(locals()) # Heroku
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
