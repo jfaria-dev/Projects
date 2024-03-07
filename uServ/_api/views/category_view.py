@@ -18,7 +18,8 @@ def getSegments(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getCategories(request, segment_id):
+def getCategories(request):
+    segment_id = request.GET.get('segment_id')
     categories = Category.get_Children(segment_id)
     serializer = CategoriesSerializer(categories, many=True)    
     return Response(serializer.data)

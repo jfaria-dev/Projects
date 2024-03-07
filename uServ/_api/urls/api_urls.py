@@ -8,7 +8,7 @@ urlpatterns = [
     # Segments and Categories
     path('structure', category_view.getStructureService),
     path('segment', category_view.getSegments),
-    path('segment/<str:segment_id>', category_view.getCategories),
+    path('categories', category_view.getCategories),
        
     
     # Services
