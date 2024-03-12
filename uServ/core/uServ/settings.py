@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     '_utils',
     
     'rest_framework',
+    'rest_framework.authtoken',
     'widget_tweaks',
 ]
 
@@ -90,27 +91,27 @@ WSGI_APPLICATION = 'core.uServ.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'mysql.connector.django',
-#         'NAME': 'db_userv',
-#         'USER': 'root',
-#         'PASSWORD': 'root',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
         'NAME': 'db_userv',
         'USER': 'root',
-        'PASSWORD': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
-        'HOST': 'monorail.proxy.rlwy.net',
-        'PORT': '28310',
+        'PASSWORD': 'senha-userv',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql.connector.django',
+#         'NAME': 'db_userv',
+#         'USER': 'root',
+#         'PASSWORD': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
+#         'HOST': 'monorail.proxy.rlwy.net',
+#         'PORT': '28310',
+#     }
+# }
 
 
 # Password validation
