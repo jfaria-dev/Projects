@@ -1,7 +1,6 @@
 from _web.models import Supplier
 from .details_serializer import DetailsSerializer
 from .address_serializer import AddressSerializer
-from _api.serializers import ServiceSerializer
 
 from rest_framework import serializers
 

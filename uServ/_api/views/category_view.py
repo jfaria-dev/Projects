@@ -12,13 +12,13 @@ def getStructureService(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getSegments(request):
+def getCategories(request):
     segments = Category.get_Segments()
     serializer = SegmentSerializer(segments, many=True)    
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getCategories(request):
+def getProfessionals(request):
     segment_id = request.GET.get('segment_id')
     print(segment_id)
     categories = Category.get_Children(segment_id)

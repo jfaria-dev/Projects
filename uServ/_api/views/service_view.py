@@ -12,8 +12,8 @@ def getGeneralServices(request, category_id):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getServices(request, standard_service_id):
-    services = Service.get_ByGeneralServiceId(standard_service_id)
+def getServices(request, general_service_id):
+    services = Service.get_ByGeneralServiceId(general_service_id)
     serializer = ServiceSerializer(services, many=True)
     return Response(serializer.data)
 

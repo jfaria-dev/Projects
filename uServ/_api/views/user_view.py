@@ -21,7 +21,6 @@ def login(request):
     return Response({'token': token.key, 'auth_user': UserAuthSerializer(user_auth).data}, status=200)
     
     
-
 @api_view(['POST'])
 def signup(request):
     data = {
@@ -61,7 +60,6 @@ def logout(request):
     if request.method == 'POST':
         request.user.auth_token.delete()
     return Response({'message': 'You are logged out!'}, status=200)
-
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])

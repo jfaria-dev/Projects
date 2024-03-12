@@ -1,11 +1,10 @@
 from _panel.models import Service
 from rest_framework import serializers
+from ..supplier.supplier_serializer import SupplierSerializer
 
 class ServiceSerializer(serializers.ModelSerializer):
-    # general_service = GeneralServiceSerializer()
-    # supplier = serializers.StringRelatedField()
+    supplier = SupplierSerializer()
     
     class Meta:
         model = Service
         fields = '__all__'
-    
