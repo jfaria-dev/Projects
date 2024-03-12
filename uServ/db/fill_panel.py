@@ -4,11 +4,10 @@ from mysql.connector import Error
 
 # Configurações do banco de dados
 config = {
-    'host': 'monorail.proxy.rlwy.net',
+    'host': 'localhost',
     'user': 'root',
-    'password': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
+    'password': 'senha-userv',
     'database': 'db_userv',
-    'port': '28310'
 }
 conn = mysql.connector.connect(**config)
 

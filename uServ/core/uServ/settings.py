@@ -96,22 +96,11 @@ DATABASES = {
         'ENGINE': 'mysql.connector.django',
         'NAME': 'db_userv',
         'USER': 'root',
-        'PASSWORD': 'senha-userv',
+        'PASSWORD': 'root', # AWS (senha: 'senha-userv')
         'HOST': 'localhost',
         'PORT': '3306',
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'mysql.connector.django',
-#         'NAME': 'db_userv',
-#         'USER': 'root',
-#         'PASSWORD': 'hBH4bDeAdFFabC-ABgb-B4C2D1bgh4Ff',
-#         'HOST': 'monorail.proxy.rlwy.net',
-#         'PORT': '28310',
-#     }
-# }
 
 
 # Password validation
