@@ -7,7 +7,7 @@ class UserAuthSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserAuth
-        fields = '__all__'
+        fields = ['email', 'is_client', 'information']
         
     def get_information(self, obj):
         if obj.user_client:  # Check for child categories
