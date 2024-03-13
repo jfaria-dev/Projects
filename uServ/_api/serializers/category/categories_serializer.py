@@ -4,4 +4,4 @@ from _panel.models import Category
 class CategoriesSerializer(ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('id', 'name', 'parent', 'active', 'children', 'text_color', 'background_color')
