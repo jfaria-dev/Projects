@@ -12,6 +12,8 @@ class Category(models.Model):
     # FIELDS
     name = models.CharField(max_length=255)
     parent = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='parents')
+    bg_color = models.CharField(max_length=7, default="#ffffff", null=True, blank=True)
+    text_color = models.CharField(max_length=7, default="#000000", null=True, blank=True)
     photo = models.ImageField(upload_to=image_path, null=True, blank=True)
     active = models.BooleanField(default=True)
     
