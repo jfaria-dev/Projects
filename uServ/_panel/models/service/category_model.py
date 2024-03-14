@@ -34,7 +34,7 @@ class Category(models.Model):
         return Category.objects.filter(pk=id).first()
     
     def get_Children(id):
-        return Category.objects.filter(parent=id, active=True)
+        return Category.objects.filter(parent_id=id, active=True)
 
 class CategoryAdmin(admin.ModelAdmin):
     list_filter = [("parent", admin.AllValuesFieldListFilter)]
