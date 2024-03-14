@@ -8,7 +8,7 @@ class AllCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'active', 'text_color', 'bg_color', 'parent')
+        fields = ('id', 'name', 'active', 'children', 'text_color', 'bg_color', 'parent')
 
     def get_children(self, obj):
         if obj.parents.exists():  # Check for child categories
