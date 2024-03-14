@@ -19,8 +19,8 @@ def getCategories(request):
 
 @api_view(['GET'])
 def getProfessionals(request):
-    segment_id = request.GET.get('segment_id')
-    print(segment_id)
-    categories = Category.get_Children(segment_id)
+    category_id = request.GET.get('category_id')
+    print(category_id)
+    categories = Category.get_Children(category_id)
     serializer = CategoriesSerializer(categories, many=True)    
     return Response(serializer.data)
