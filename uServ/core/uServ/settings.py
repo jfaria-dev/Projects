@@ -16,6 +16,10 @@ SECRET_KEY = 'django-insecure-f*2l!35mg(ggu=u3sss)zfhs*44lltyrx4pif(1i@b#rg*+k2e
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["userv.app.br"]
+CSRF_TRUSTED_ORIGINS = ["https://userv.app.br"]
+CSRF_ALLOWED_ORIGINS = ["https://userv.app.br"]
+CORS_ORIGINS_WHITELIST = ["https://userv.app.br"]
 
 # Application definition
 
