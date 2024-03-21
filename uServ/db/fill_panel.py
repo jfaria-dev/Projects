@@ -12,7 +12,7 @@ config = {
 conn = mysql.connector.connect(**config)
 
 # Carregar a planilha
-caminho_da_planilha = r'D:\Documentos\Projects\uServ\db\Servicos.xlsx'
+caminho_da_planilha = r'Servicos.xlsx'
 # Se sua planilha estiver em formato CSV, você pode usar caminho_da_planilha = 'caminho/para/sua/planilha.csv'
 dataframe = pd.read_excel(caminho_da_planilha, sheet_name="Planilha4")
 
