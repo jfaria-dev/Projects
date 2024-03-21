@@ -6,7 +6,7 @@ from mysql.connector import Error
 config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'senha-userv',
+    'password': 'root',
     'database': 'db_userv',
 }
 conn = mysql.connector.connect(**config)
