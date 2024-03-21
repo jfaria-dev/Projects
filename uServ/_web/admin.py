@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from _auth.models import UserAuth
-from _web.models import Plan, Attribute, User, Screen, Menu, SupplierDetails
-from _panel.models import Category, CategoryAdmin, UnitForService
+from _web.models import Plan, Attribute, User, Screen, SupplierDetails
+from _panel.models import Category, CategoryAdmin, Service, GeneralService, UnitForService
 
 
 class UserAdmin(UserAdmin):
@@ -11,6 +11,6 @@ class UserAdmin(UserAdmin):
     ordering = ['email']
 admin.site.register(UserAuth, UserAdmin)
 
-admin.site.register([User, Screen, Plan, Attribute, SupplierDetails, UnitForService])
+admin.site.register([User, Screen, Plan, Attribute, SupplierDetails, UnitForService, Service, GeneralService])
 admin.site.register(Category, CategoryAdmin, )
 
