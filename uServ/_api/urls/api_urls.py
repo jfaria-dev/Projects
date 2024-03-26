@@ -22,11 +22,11 @@ urlpatterns = [
     path('professionals', category_view.getProfessionals),
         
     # Services
-    path('general-services/<str:category_id>', service_view.getGeneralServices), # busca os serviços pelos profissionais (categoria)
-    path('services-by-generalservice/<str:general_service_id>', service_view.getServices),
-    path('service/<str:service_id>', service_view.getServiceById),
+    path('general-services/<int:category_id>', service_view.getGeneralServices), # busca os serviços pelos profissionais (categoria)
+    path('services-by-generalservice/<int:general_service_id>', service_view.getServices),
+    path('service/<int:service_id>', service_view.getServiceById),
     
     # Suppliers
-    path('supplier/<str:supplier_id>', supplier_view.getSupplierById),
-    path('supplier/<str:supplier_id>/services', service_view.getServicesBySupplierId),
+    path('supplier/<int:supplier_id>', supplier_view.getSupplierById),
+    path('supplier/<int:supplier_id>/services', service_view.getServicesBySupplierId),
 ]
