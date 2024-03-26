@@ -18,11 +18,11 @@ urlpatterns = [
         
     # Categories and Professionals
     path('structure', category_view.getStructureService),
-    path('categories', category_view.getCategories),
-    path('professionals', category_view.getProfessionals),
+    path('sectors', category_view.getCategories),
+    path('categories', category_view.getProfessionals),
         
     # Services
-    path('general-services/<int:category_id>', service_view.getGeneralServices), # busca os serviços pelos profissionais (categoria)
+    path('standard-services/<int:category_id>', service_view.getGeneralServices), # busca os serviços pelos profissionais (categoria)
     path('services-by-generalservice/<int:general_service_id>', service_view.getServices),
     path('service/<int:service_id>', service_view.getServiceById),
     

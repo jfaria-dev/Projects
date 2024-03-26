@@ -111,8 +111,8 @@ def fetch_endpoints(request):
                     }
                 },
                 {
-                    'categories': {
-                        'url': '/api/categories',
+                    'sectors': {
+                        'url': '/api/sectors',
                         'type': 'GET',
                         'data_response': {
                             "id": 'integer',
@@ -124,8 +124,8 @@ def fetch_endpoints(request):
                     }
                 },
                 {
-                    'professionals': {
-                        'url': '/professionals',
+                    'categories': {
+                        'url': '/categories',
                         'type': 'GET',
                         'data_response': {
                             "id": 'integer',
@@ -141,7 +141,7 @@ def fetch_endpoints(request):
         {
             'services': [
                 {
-                    'general-services': {
+                    'standard-services': {
                         'url': '/api/standard-services/{category_id}',
                         'type': 'GET',
                         'data_request': {
